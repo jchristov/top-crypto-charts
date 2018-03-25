@@ -192,9 +192,12 @@ app.get('/', function (req, res, next) {
     return next();
  })
  
- var server = app.listen(8081, function () {
+var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080;
+var ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
+
+var server = app.listen(port, ip, function () {
     var host = server.address().address
     var port = server.address().port
     
-    console.log("Example app listening at http://%s:%s", host, port)
- })
+    console.log("charts-generator app listening at http://%s:%s", host, port)
+})

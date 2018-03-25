@@ -22,9 +22,5 @@
   "bugs": {
     "url": "https://github.com/cuppacoffee93/charts-generator/issues"
   },
-  "homepage": "https://github.com/cuppacoffee93/charts-generator#readme",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "main": "server.js"
+  "homepage": "https://github.com/cuppacoffee93/charts-generator#readme"
 }
