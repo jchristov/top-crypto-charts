@@ -7,27 +7,24 @@
 
             function getCharts() {
 
-                var url = "/link?topCount=" + $("#iCount").val();
-                url += "&sort=";
+                var url = "/link?";
+                
+                var topCountParam = "count=".concat($("#iCount").val());
+                var baseCoinParam = "&coin=".concat($("#sBase").val());
+                var sortParam = "&sort=".concat($("#isort").val());
 
-                if ($('#isort').is(":checked"))
-                    url+="1";
-                else 
-                    url+="0";
-
+                url = url.concat(topCountParam, baseCoinParam, sortParam);       
+                
                 $.getJSON(url, function( data ) {
                     $("#mcc").html(data["mcc"]);
                     $("#tv").html(data["tv"]);
                 })
             }
 
-            $(document).ready(function(){
+            function openMCC() {
+                window.open($("#mcc").text(), '_blank');
+            }
 
-                getCharts();
-
-                $("#bSubmit").click(getCharts);
-            });
-            
             function copyToClipboard(element) {
                 var $temp = $("<input>");
                 $("body").append($temp);
@@ -36,30 +33,44 @@
                 $temp.remove();
             }
 
-            function openMCC() {
-                console.log("23");
-                console.log($("#mcc").text());
-                window.open($("#mcc").text(), '_blank');
-            }
+            $(document).ready(function(){
+
+                getCharts();
+
+                $("#bSubmit").click(getCharts);
+
+                $('input[type="checkbox"]').change(function(){
+                    this.value = (Number(this.checked));
+                });
+            });
         </script>
     </head>
     <body>
 
+        <h1>Top Volume Binance Coins</h1>
         <div>
             <input id="iCount" type="number" value="10" pattern="[0-9]" autocomplete="off"/>
-            <label for="iCount">Top x volume coins</label>
+            <label for="iCount">Top volume coins</label>
         </div>
         <div>
-            <input id="isort" type="checkbox" name="sort" value="sort" checked>
-            <label for="isort">Sort Symbols?</label>
+            <select id="sBase">
+                <option value="BTC">BTC</option>
+                <option value="ETH">ETH</option>
+                <option value="BNB">BNB</option>
+                <option value="USDT">USDT</option>
+              </select>
         </div>
         <div>
-            <button id="bSubmit" type="button">Click</button>
+            <input id="isort" type="checkbox" name="sort" value="1" checked>
+            <label for="isort">Sort Symbols Alphabetically?</label>
+        </div>
+        <div>
+            <button id="bSubmit" type="button">Get Charts</button>
         </div>
         
 
         <div>
-            <h1 id="h1MCC">MCC</h1>
+            <h2 id="hMCC">MCC</h2>
             <p id="mcc"></p>
             <button id="bCopyMCC" type="button" onClick="copyToClipboard('#mcc')">Copy</button>
             <button id="bOpenMCC" type="button" onClick="openMCC()">Open</button>
@@ -67,7 +78,7 @@
         <br />
 
         <div>
-            <h1 id="h1TV">Trading View</h1>
+            <h2 id="h1TV">Trading View</h2>
             <p id="tv"></p>
             <button id="bCopyTV" type="button" onClick="copyToClipboard('#tv')">Copy</button>
         </div>

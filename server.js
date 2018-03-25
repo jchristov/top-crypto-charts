@@ -4,9 +4,6 @@ var app = express();
 var path = require('path');
 
 var all_symbols = []
-var btc_symbols = []
-var eth_symbols = []
-var usdt_symbols = []
 
 function compareBySymbol(a,b) {
     if (a.symbol < b.symbol)
@@ -24,13 +21,23 @@ function compareByVolume(a,b) {
     return 0;
 }
 
-function getSymbols(topCount, doSort)
+function getByBase(key, array){
+    for (var i=0; i < array.length; i++) {
+        if (array[i].base === key) {
+            return array[i];
+        }
+    }
+}
+
+function getSymbols(topCount, base, doSort)
 {
     var symbols = [];
-    if (topCount < btc_symbols.length)
-        symbols = btc_symbols.slice(0, topCount);
+
+    var tempSymbols = getByBase(base, all_symbols)
+    if (topCount < tempSymbols.markets.length)
+        symbols = tempSymbols.markets.slice(0, topCount);
     else
-        symbols = btc_symbols;
+        symbols = tempSymbols.markets;
 
     if (doSort == 1)
     {
@@ -77,8 +84,8 @@ function BinanceMarketsRequest()
 
     https.get(url, res => {
 
-        console.log('statusCode:', res.statusCode);
-        console.log('headers:', res.headers);
+        //console.log('statusCode:', res.statusCode);
+        //console.log('headers:', res.headers);
 
         res.setEncoding("utf8");
         let body = "";
@@ -97,9 +104,10 @@ function BinanceMarketsRequest()
 function processBinanceMarkets(json)
 {
     temp_all_symbols = []
-    temp_btc_symbols = []
-    temp_eth_symbols = []
-    temp_usdt_symbols = []
+    btc_symbols = []
+    eth_symbols = []
+    bnb_symbols = []
+    usdt_symbols = []
 
     for(var i = 0; i < json.length; i++) {
         var obj = json[i];
@@ -107,16 +115,9 @@ function processBinanceMarkets(json)
         var symbol = obj["symbol"];
         var volume = parseFloat(obj["quoteVolume"]);
 
-        temp_all_symbols.push(
-            {
-                symbol: symbol,
-                volume: volume
-            }
-        );
-
         if("BTC" == symbol.substr(symbol.length - 3))
         {
-            temp_btc_symbols.push(
+            btc_symbols.push(
                 {
                     symbol: symbol,
                     volume: volume
@@ -124,7 +125,15 @@ function processBinanceMarkets(json)
             );
         } else if ("ETH" == symbol.substr(symbol.length - 3))
         {
-            temp_eth_symbols.push(
+            eth_symbols.push(
+                {
+                    symbol: symbol,
+                    volume: volume
+                }
+            );
+        } else if ("BNB" == symbol.substr(symbol.length - 3))
+        {
+            bnb_symbols.push(
                 {
                     symbol: symbol,
                     volume: volume
@@ -132,7 +141,7 @@ function processBinanceMarkets(json)
             );
         } else if ("USDT" == symbol.substr(symbol.length - 4))
         {
-            temp_usdt_symbols.push(
+            usdt_symbols.push(
                 {
                     symbol: symbol,
                     volume: volume
@@ -141,15 +150,31 @@ function processBinanceMarkets(json)
         }
     }
 
-    temp_all_symbols = temp_all_symbols.sort(compareByVolume);
-    temp_btc_symbols = temp_btc_symbols.sort(compareByVolume);
-    temp_eth_symbols = temp_eth_symbols.sort(compareByVolume);
-    temp_usdt_symbols = temp_usdt_symbols.sort(compareByVolume);
+    btc_symbols = btc_symbols.sort(compareByVolume);
+    eth_symbols = eth_symbols.sort(compareByVolume);
+    bnb_symbols = bnb_symbols.sort(compareByVolume);
+    usdt_symbols = usdt_symbols.sort(compareByVolume);
     
+    temp_all_symbols.push(
+        {
+            base: "BTC",
+            markets: btc_symbols
+        },
+        {
+            base: "ETH",
+            markets: eth_symbols
+        },
+        {
+            base: "BNB",
+            markets: bnb_symbols
+        },
+        {
+            base: "USDT",
+            markets: usdt_symbols
+        },
+    );
+
     all_symbols = temp_all_symbols;
-    btc_symbols = temp_btc_symbols;
-    eth_symbols = temp_eth_symbols;
-    usdt_symbols = temp_usdt_symbols;
 }
 
 /*function refreshBinanceMarkets()
@@ -180,18 +205,40 @@ app.get('/', function (req, res, next) {
     res.sendFile(path.join(__dirname + '/index.html'));
  })
 
+ function validateParameters(numTopVolume, baseCoin, doSort)
+ {
+
+    if (isNaN(numTopVolume) || numTopVolume <= 0)
+        return false;
+
+    if("BTC" != baseCoin && "ETH" != baseCoin && "BNB" != baseCoin && "USDT" != baseCoin)
+        return false;
+
+    if(doSort!= 0 && doSort != 1)
+        return false;
+
+    return true;
+ }
+
  app.get('/link', function (req, res, next) {
 
-    if (!req.query.topCount || !req.query.sort)
+    if (!req.query.count || !req.query.coin || !req.query.sort)
     {
         res.send(500);
+        return;
     }
 
-    var numTopVolume = parseInt(req.query.topCount);
-    var doSort = parseInt(req.query.sort)
-    //var numTopVolume = 10;
+    var numTopVolume = parseInt(req.query.count);
+    var baseCoin = req.query.coin;
+    var doSort = parseInt(req.query.sort);
 
-    var symbols = getSymbols(numTopVolume, doSort)
+    if(!validateParameters(numTopVolume, baseCoin, doSort))
+    {
+        res.send(500);
+        return;
+    }
+
+    var symbols = getSymbols(numTopVolume, baseCoin, doSort)
     var mccLink = createMCCLink(symbols);
     var tvLink = createTradingViewLink(symbols);
 
