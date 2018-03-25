@@ -4,6 +4,7 @@
 function Get(yourUrl, callback){
     var Httpreq = new XMLHttpRequest(); // a new request
     Httpreq.onreadystatechange = function() { 
+        console.log(Httpreq.getResponseHeader())
         if (Httpreq.readyState == 4 && Httpreq.status == 200)
             callback(JSON.parse(Httpreq.responseText));
     }
@@ -31,9 +32,7 @@ function BinanceVolumeResponseHandler(json) {
         symbols += obj["symbol"]
         symbols += ' '
     }
-
     
-
     pBinanceVolumeModifer(symbols)
 }
 

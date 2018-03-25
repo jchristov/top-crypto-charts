@@ -1,0 +1,30 @@
+{
+  "name": "charts-generator",
+  "version": "0.1.0",
+  "dependencies": {
+    "express": "^4.16.3"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "main": "server.js",
+  "description": "Used to generate charts for Trading View and MCC",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cuppacoffee93/charts-generator.git"
+  },
+  "keywords": [
+    "charts"
+  ],
+  "author": "cuppacoffee",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cuppacoffee93/charts-generator/issues"
+  },
+  "homepage": "https://github.com/cuppacoffee93/charts-generator#readme",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "main": "server.js"
+}
