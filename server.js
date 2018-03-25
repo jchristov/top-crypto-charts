@@ -1,6 +1,7 @@
 var express = require('express');
 const https = require('https');
 var app = express();
+var path = require('path');
 
 var all_symbols = []
 var btc_symbols = []
@@ -23,13 +24,18 @@ function compareByVolume(a,b) {
     return 0;
 }
 
-function getSymbols(topCount)
+function getSymbols(topCount, doSort)
 {
     var symbols = [];
     if (topCount < btc_symbols.length)
         symbols = btc_symbols.slice(0, topCount);
     else
         symbols = btc_symbols;
+
+    if (doSort == 1)
+    {
+        symbols = symbols.sort(compareBySymbol);
+    }
 
     return symbols;
 }
@@ -171,14 +177,21 @@ app.all('/', function(req, res, next) {
 
 app.get('/', function (req, res, next) {
 
-    if (!req.query.topCount)
+    res.sendFile(path.join(__dirname + '/index.html'));
+ })
+
+ app.get('/link', function (req, res, next) {
+
+    if (!req.query.topCount || !req.query.sort)
     {
         res.send(500);
     }
 
     var numTopVolume = parseInt(req.query.topCount);
+    var doSort = parseInt(req.query.sort)
+    //var numTopVolume = 10;
 
-    var symbols = getSymbols(numTopVolume)
+    var symbols = getSymbols(numTopVolume, doSort)
     var mccLink = createMCCLink(symbols);
     var tvLink = createTradingViewLink(symbols);
 

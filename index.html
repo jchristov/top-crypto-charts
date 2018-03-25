@@ -1,12 +1,77 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Charts</title>
-        <script type="text/javascript" src="js/charts.js"></script> 
+    <head>
+        <title>Charts</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <script>
+
+            function getCharts() {
+
+                var url = "/link?topCount=" + $("#iCount").val();
+                url += "&sort=";
+
+                if ($('#isort').is(":checked"))
+                    url+="1";
+                else 
+                    url+="0";
+
+                $.getJSON(url, function( data ) {
+                    $("#mcc").html(data["mcc"]);
+                    $("#tv").html(data["tv"]);
+                })
+            }
+
+            $(document).ready(function(){
+
+                getCharts();
+
+                $("#bSubmit").click(getCharts);
+            });
+            
+            function copyToClipboard(element) {
+                var $temp = $("<input>");
+                $("body").append($temp);
+                $temp.val($(element).text()).select();
+                document.execCommand("copy");
+                $temp.remove();
+            }
+
+            function openMCC() {
+                console.log("23");
+                console.log($("#mcc").text());
+                window.open($("#mcc").text(), '_blank');
+            }
+        </script>
     </head>
-<body>
-Charts
-<button id="btnBinanceVolume" type="button" onclick="btnBinanceVolumeOnCLick()">Click</button>
-<p id="pBinanceVolume">none</p>
-</body>
+    <body>
+
+        <div>
+            <input id="iCount" type="number" value="10" pattern="[0-9]" autocomplete="off"/>
+            <label for="iCount">Top x volume coins</label>
+        </div>
+        <div>
+            <input id="isort" type="checkbox" name="sort" value="sort" checked>
+            <label for="isort">Sort Symbols?</label>
+        </div>
+        <div>
+            <button id="bSubmit" type="button">Click</button>
+        </div>
+        
+
+        <div>
+            <h1 id="h1MCC">MCC</h1>
+            <p id="mcc"></p>
+            <button id="bCopyMCC" type="button" onClick="copyToClipboard('#mcc')">Copy</button>
+            <button id="bOpenMCC" type="button" onClick="openMCC()">Open</button>
+        </div>
+        <br />
+
+        <div>
+            <h1 id="h1TV">Trading View</h1>
+            <p id="tv"></p>
+            <button id="bCopyTV" type="button" onClick="copyToClipboard('#tv')">Copy</button>
+        </div>
+        <br />
+
+    </body>
 </html>
