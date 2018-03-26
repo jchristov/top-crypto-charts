@@ -6,6 +6,11 @@ var path = require('path');
 var all_vol_symbols = []
 var all_gain_symbols = []
 
+function getDate() {
+
+    return new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
+}
+
 function compareBySymbol(a,b) {
     if (a.symbol < b.symbol)
       return -1;
@@ -98,8 +103,7 @@ function BinanceMarketsRequest()
 
     https.get(url, res => {
 
-        console.log("Refreshed Coins:")
-        console.log('statusCode:', res.statusCode);
+        console.log(`${getDate()}: Refreshed Coins - statusCode:${res.statusCode}`);
         
 
         res.setEncoding("utf8");
@@ -238,6 +242,8 @@ refreshBinanceMarkets(); // execute function
 
 // REST API
 
+app.enable('trust proxy');
+
 app.all('/', function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "X-Requested-With");
@@ -247,6 +253,8 @@ app.all('/', function(req, res, next) {
 app.get('/', function (req, res, next) {
 
     res.sendFile(path.join(__dirname + '/index.html'));
+
+    console.log(`${getDate()}: Index at ip address: ${req.ip}`);
  })
 
  function validateParameters(numTopVolume, baseCoin, type, doSort)
@@ -271,6 +279,7 @@ app.get('/', function (req, res, next) {
 
     if (!req.query.count || !req.query.coin || !req.query.type || !req.query.sort)
     {
+        console.log(`${getDate()}: Request at ip address ${req.ip} denied. Invalid Params-Params missing.`);
         res.send(500);
         return;
     }
@@ -282,9 +291,12 @@ app.get('/', function (req, res, next) {
 
     if(!validateParameters(numTopVolume, baseCoin, type, doSort))
     {
+        console.log(`${getDate()}: Request at ip address ${req.ip} denied. Invalid Params-topCount:${numTopVolume},baseCoin:${baseCoin},type:${type},doSort:${doSort}`);
         res.send(500);
         return;
     }
+
+    console.log(`${getDate()}: Request at ip address ${req.ip} accepted. Params-topCount:${numTopVolume},baseCoin:${baseCoin},type:${type},doSort:${doSort}`);
 
     var symbols = getSymbols(numTopVolume, baseCoin, type, doSort)
     var mccLink = createMCCLink(symbols);
@@ -306,6 +318,5 @@ var ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
 var server = app.listen(port, ip, function () {
     var host = server.address().address
     var port = server.address().port
-    
     console.log("charts-generator app listening at http://%s:%s", host, port)
 })
