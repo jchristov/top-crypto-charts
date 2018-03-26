@@ -11,9 +11,10 @@
                 
                 var topCountParam = "count=".concat($("#iCount").val());
                 var baseCoinParam = "&coin=".concat($("#sBase").val());
+                var typeParam = "&type=".concat($("#sType").val());
                 var sortParam = "&sort=".concat($("#isort").val());
 
-                url = url.concat(topCountParam, baseCoinParam, sortParam);       
+                url = url.concat(topCountParam, baseCoinParam, typeParam, sortParam);       
                 
                 $.getJSON(url, function( data ) {
                     $("#mcc").html(data["mcc"]);
@@ -47,21 +48,28 @@
     </head>
     <body>
 
-        <h1>Top Volume Binance Coins</h1>
+        <h1>Binance Charts Generator</h1>
         <div>
             <input id="iCount" type="number" value="10" pattern="[0-9]" autocomplete="off"/>
-            <label for="iCount">Top volume coins</label>
+            <label for="iCount">Number of coins</label>
         </div>
         <div>
             <select id="sBase">
-                <option value="BTC">BTC</option>
-                <option value="ETH">ETH</option>
                 <option value="BNB">BNB</option>
+                <option selected="selected" value="BTC">BTC</option>
+                <option value="ETH">ETH</option>
                 <option value="USDT">USDT</option>
               </select>
+              <label for="sBase">Base Coin</label>
         </div>
         <div>
-            <input id="isort" type="checkbox" name="sort" value="1" checked>
+            <select id="sType">
+                <option value="V">Top Volume</option>
+                <option value="G">Top Gainers</option>
+            </select>
+        </div>
+        <div>
+            <input id="isort" type="checkbox" name="sort" value="0">
             <label for="isort">Sort Symbols Alphabetically?</label>
         </div>
         <div>
