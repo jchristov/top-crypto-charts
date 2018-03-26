@@ -66,7 +66,7 @@ function createMCCLink(symbols)
     var link = "https://www.multicoincharts.com/?"
     for(var i = 0; i < symbols.length; i++)
     {
-        link += "chart=";
+        link += "chart=BINANCE:";
         link += symbols[i].symbol;
 
         if(i != symbols.length-1)
@@ -98,8 +98,9 @@ function BinanceMarketsRequest()
 
     https.get(url, res => {
 
-        //console.log('statusCode:', res.statusCode);
-        //console.log('headers:', res.headers);
+        console.log("Refreshed Coins:")
+        console.log('statusCode:', res.statusCode);
+        
 
         res.setEncoding("utf8");
         let body = "";
