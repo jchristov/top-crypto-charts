@@ -26,6 +26,23 @@
                 window.open($("#mcc").text(), '_blank');
             }
 
+            function downloadTV() {
+                
+                var filename = "watchlist.txt"
+                var text = $("#tv").text();
+
+                var element = document.createElement('a');
+                element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+                element.setAttribute('download', filename);
+
+                element.style.display = 'none';
+                document.body.appendChild(element);
+
+                element.click();
+
+                document.body.removeChild(element);
+            }
+
             function copyToClipboard(element) {
                 var $temp = $("<input>");
                 $("body").append($temp);
@@ -89,6 +106,7 @@
             <h2 id="h1TV">Trading View</h2>
             <p id="tv"></p>
             <button id="bCopyTV" type="button" onClick="copyToClipboard('#tv')">Copy</button>
+            <button id="bDownloadTV" type="button" onClick="downloadTV()">Download</button>
         </div>
         <br />
 

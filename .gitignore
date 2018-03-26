@@ -61,4 +61,7 @@ typings/
 .next
 
 # Macos
-/DS_Store
+.DS_Store
+
+# vscode
+.vscode
