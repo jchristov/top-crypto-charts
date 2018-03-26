@@ -101,7 +101,7 @@ function BinanceMarketsRequest()
     // No third party module required: https is part of the Node.js API
     const url = "https://api.binance.com/api/v1/ticker/24hr";
 
-    https.get(url, res => {
+    var getRequest = https.get(url, res => {
 
         console.log(`${getDate()}: Refreshed Coins - statusCode:${res.statusCode}`);
         
@@ -117,6 +117,10 @@ function BinanceMarketsRequest()
             body = JSON.parse(body);
             processBinanceMarkets(body);
         });
+    });
+
+    getRequest.on('error', function (err) {
+        console.log(err);
     });
 }
 
