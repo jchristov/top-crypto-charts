@@ -1,70 +1,8 @@
 var express = require('express');
-const https = require('https');
 var app = express();
 var path = require('path');
-
-var all_vol_symbols = []
-var all_gain_symbols = []
-
-function getDate() {
-
-    return new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
-}
-
-function compareBySymbol(a,b) {
-    if (a.symbol < b.symbol)
-      return -1;
-    if (a.symbol > b.symbol)
-      return 1;
-    return 0;
-}
-
-function compareByVolume(a,b) {
-    if (a.volume < b.volume)
-      return 1;
-    if (a.volume > b.volume)
-      return -1;
-    return 0;
-}
-
-function compareByGain(a,b) {
-    if (a.gain < b.gain)
-      return 1;
-    if (a.gain > b.gain)
-      return -1;
-    return 0;
-}
-
-function getByBase(key, array){
-    for (var i=0; i < array.length; i++) {
-        if (array[i].base === key) {
-            return array[i];
-        }
-    }
-}
-
-function getSymbols(topCount, base, type, doSort)
-{
-    var symbols = [];
-
-    var tempSymbols;
-    if(type == "V")
-        tempSymbols = getByBase(base, all_vol_symbols);
-    else if(type == "G")
-        tempSymbols = getByBase(base, all_gain_symbols)
-
-    if (topCount < tempSymbols.markets.length)
-        symbols = tempSymbols.markets.slice(0, topCount);
-    else
-        symbols = tempSymbols.markets;
-
-    if (doSort == 1)
-    {
-        symbols = symbols.sort(compareBySymbol);
-    }
-
-    return symbols;
-}
+var log = require('./log.js');
+var binance = require('./binance.js');
 
 function createMCCLink(symbols)
 {
@@ -96,139 +34,22 @@ function createTradingViewLink(symbols)
     return link;
 }
 
-function BinanceMarketsRequest()
+function validateParameters(numTopVolume, baseCoin, type, doSort)
 {
-    // No third party module required: https is part of the Node.js API
-    const url = "https://api.binance.com/api/v1/ticker/24hr";
 
-    var getRequest = https.get(url, res => {
+   if (isNaN(numTopVolume) || numTopVolume <= 0)
+       return false;
 
-        console.log(`${getDate()}: Refreshed Coins - statusCode:${res.statusCode}`);
-        
+   if("BTC" != baseCoin && "ETH" != baseCoin && "BNB" != baseCoin && "USDT" != baseCoin)
+       return false;
 
-        res.setEncoding("utf8");
-        let body = "";
+   if("V" != type && "G" != type)
+       return false;
 
-        res.on("data", data => {
-            body += data;
-        });
+   if(doSort!= 0 && doSort != 1)
+       return false;
 
-        res.on("end", () => {
-            body = JSON.parse(body);
-            processBinanceMarkets(body);
-        });
-    });
-
-    getRequest.on('error', function (err) {
-        console.log(err);
-    });
-}
-
-function processBinanceMarkets(json)
-{
-    var temp_vol_symbols = [];
-    var temp_gain_symbols = [];
-    var btc_symbols = [];
-    var eth_symbols = [];
-    var bnb_symbols = [];
-    var usdt_symbols = [];
-
-    for(var i = 0; i < json.length; i++) {
-        var obj = json[i];
-
-        var symbol = obj["symbol"];
-        var volume = parseFloat(obj["quoteVolume"]);
-        var gain = parseFloat(obj["priceChangePercent"]);
-
-        if("BTC" == symbol.substr(symbol.length - 3))
-        {
-            btc_symbols.push(
-                {
-                    symbol: symbol,
-                    volume: volume,
-                    gain: gain
-                }
-            );
-        } else if ("ETH" == symbol.substr(symbol.length - 3))
-        {
-            eth_symbols.push(
-                {
-                    symbol: symbol,
-                    volume: volume,
-                    gain: gain
-                }
-            );
-        } else if ("BNB" == symbol.substr(symbol.length - 3))
-        {
-            bnb_symbols.push(
-                {
-                    symbol: symbol,
-                    volume: volume,
-                    gain: gain
-                }
-            );
-        } else if ("USDT" == symbol.substr(symbol.length - 4))
-        {
-            usdt_symbols.push(
-                {
-                    symbol: symbol,
-                    volume: volume,
-                    gain: gain
-                }
-            );
-        }
-    }
-
-    var btc_vol_symbols = btc_symbols.sort(compareByVolume).slice();
-    var eth_vol_symbols = eth_symbols.sort(compareByVolume).slice();
-    var bnb_vol_symbols = bnb_symbols.sort(compareByVolume).slice();
-    var usdt_vol_symbols = usdt_symbols.sort(compareByVolume).slice();
-
-    temp_vol_symbols.push(
-        {
-            base: "BTC",
-            markets: btc_vol_symbols
-        },
-        {
-            base: "ETH",
-            markets: eth_vol_symbols
-        },
-        {
-            base: "BNB",
-            markets: bnb_vol_symbols
-        },
-        {
-            base: "USDT",
-            markets: usdt_vol_symbols
-        },
-    );
-    
-    var btc_gain_symbols = btc_symbols.sort(compareByGain).slice();
-    var eth_gain_symbols = eth_symbols.sort(compareByGain).slice();
-    var bnb_gain_symbols = bnb_symbols.sort(compareByGain).slice();
-    var usdt_gain_symbols = usdt_symbols.sort(compareByGain).slice();
-    
-    temp_gain_symbols.push(
-        {
-            base: "BTC",
-            markets: btc_gain_symbols
-        },
-        {
-            base: "ETH",
-            markets: eth_gain_symbols
-        },
-        {
-            base: "BNB",
-            markets: bnb_gain_symbols
-        },
-        {
-            base: "USDT",
-            markets: usdt_gain_symbols
-        },
-    );
-
-    all_vol_symbols = temp_vol_symbols;    
-    all_gain_symbols = temp_gain_symbols;
+   return true;
 }
 
 function refreshBinanceMarkets()
@@ -236,13 +57,12 @@ function refreshBinanceMarkets()
     x = 60;  // 60 Seconds
 
     // Do your thing here
-    BinanceMarketsRequest()
+    binance.BinanceMarketsRequest()
 
     setTimeout(refreshBinanceMarkets, x*1000);
 }
 
 refreshBinanceMarkets(); // execute function
-
 
 // REST API
 
@@ -258,32 +78,14 @@ app.get('/', function (req, res, next) {
 
     res.sendFile(path.join(__dirname + '/index.html'));
 
-    console.log(`${getDate()}: Index at ip address: ${req.ip}`);
+    log.log(`Index at ip address: ${req.ip}`)
  })
-
- function validateParameters(numTopVolume, baseCoin, type, doSort)
- {
-
-    if (isNaN(numTopVolume) || numTopVolume <= 0)
-        return false;
-
-    if("BTC" != baseCoin && "ETH" != baseCoin && "BNB" != baseCoin && "USDT" != baseCoin)
-        return false;
-
-    if("V" != type && "G" != type)
-        return false;
-
-    if(doSort!= 0 && doSort != 1)
-        return false;
-
-    return true;
- }
 
  app.get('/link', function (req, res, next) {
 
     if (!req.query.count || !req.query.coin || !req.query.type || !req.query.sort)
     {
-        console.log(`${getDate()}: Request at ip address ${req.ip} denied. Invalid Params-Params missing.`);
+        log.log(`Request at ip address ${req.ip} denied. Invalid Params-Params missing.`);
         res.send(500);
         return;
     }
@@ -295,14 +97,14 @@ app.get('/', function (req, res, next) {
 
     if(!validateParameters(numTopVolume, baseCoin, type, doSort))
     {
-        console.log(`${getDate()}: Request at ip address ${req.ip} denied. Invalid Params-topCount:${numTopVolume},baseCoin:${baseCoin},type:${type},doSort:${doSort}`);
+        log.log(`Request at ip address ${req.ip} denied. Invalid Params-topCount:${numTopVolume},baseCoin:${baseCoin},type:${type},doSort:${doSort}`);
         res.send(500);
         return;
     }
 
-    console.log(`${getDate()}: Request at ip address ${req.ip} accepted. Params-topCount:${numTopVolume},baseCoin:${baseCoin},type:${type},doSort:${doSort}`);
+    log.log(`Request at ip address ${req.ip} accepted. Params-topCount:${numTopVolume},baseCoin:${baseCoin},type:${type},doSort:${doSort}`);
 
-    var symbols = getSymbols(numTopVolume, baseCoin, type, doSort)
+    var symbols = binance.getSymbols(numTopVolume, baseCoin, type, doSort)
     var mccLink = createMCCLink(symbols);
     var tvLink = createTradingViewLink(symbols);
 
@@ -322,5 +124,6 @@ var ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
 var server = app.listen(port, ip, function () {
     var host = server.address().address
     var port = server.address().port
-    console.log("charts-generator app listening at http://%s:%s", host, port)
+
+    log.log(`charts-generator app listening at http://${host}:${port}`);
 })
