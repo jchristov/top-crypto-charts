@@ -1,4 +1,5 @@
 const https = require('https');
+var database = require('./database.js');
 var log = require('./log.js');
 var sort = require('./sort.js');
 
@@ -55,11 +56,17 @@ function processBinanceMarkets(json)
         var obj = json[i];
 
         var symbol = obj["symbol"];
+        var market = "";
+        var base = "";
+        var exchange = "BINANCE";
         var volume = parseFloat(obj["quoteVolume"]);
         var gain = parseFloat(obj["priceChangePercent"]);
 
         if("BTC" == symbol.substr(symbol.length - 3))
         {
+            market = symbol.substr(0, symbol.length - 3);
+            base = symbol.substr(symbol.length - 3);
+
             btc_symbols.push(
                 {
                     symbol: symbol,
@@ -69,6 +76,9 @@ function processBinanceMarkets(json)
             );
         } else if ("ETH" == symbol.substr(symbol.length - 3))
         {
+            market = symbol.substr(0, symbol.length - 3);
+            base = symbol.substr(symbol.length - 3);
+
             eth_symbols.push(
                 {
                     symbol: symbol,
@@ -78,6 +88,9 @@ function processBinanceMarkets(json)
             );
         } else if ("BNB" == symbol.substr(symbol.length - 3))
         {
+            market = symbol.substr(0, symbol.length - 3);
+            base = symbol.substr(symbol.length - 3);
+
             bnb_symbols.push(
                 {
                     symbol: symbol,
@@ -87,6 +100,9 @@ function processBinanceMarkets(json)
             );
         } else if ("USDT" == symbol.substr(symbol.length - 4))
         {
+            market = symbol.substr(0, symbol.length - 4);
+            base = symbol.substr(symbol.length - 4);
+
             usdt_symbols.push(
                 {
                     symbol: symbol,
@@ -94,6 +110,11 @@ function processBinanceMarkets(json)
                     gain: gain
                 }
             );
+        }
+
+        if(market != "" && base != "") // For some reason these are empty on once call. 
+        {                               // Perhaps binance is returning an empty entry? Need to check.
+            database.insert(market, base, exchange, volume, gain);
         }
     }
 

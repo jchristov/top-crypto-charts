@@ -1,8 +1,13 @@
 var express = require('express');
 var app = express();
 var path = require('path');
-var log = require('./log.js');
+var database = require('./database.js');
 var binance = require('./binance.js');
+var log = require('./log.js');
+
+// Initialise database
+database.init();
+//database.insert("ETH", "BTC", "BINANCE", 8000, 23);
 
 function createMCCLink(symbols)
 {
