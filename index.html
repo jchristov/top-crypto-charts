@@ -45,6 +45,7 @@
                 txt += "<th>Base Coin</th>";
                 txt += "<th>Exchange</th>";
                 txt += "<th>Volume</th>";
+                txt += "<th>Volume(BTC)</th>";
                 txt += "<th>Gain</th>";
                 txt += "</tr>";
                 for (var i in data) {
@@ -53,6 +54,7 @@
                     txt += "<td>" + data[i].base + "</td>";
                     txt += "<td>" + data[i].exchange + "</td>";
                     txt += "<td>" + data[i].volume + "</td>";
+                    txt += "<td>" + data[i].btc_volume + "</td>";
                     txt += "<td>" + data[i].gain + "</td>";
                     txt += "</tr>";
                 }

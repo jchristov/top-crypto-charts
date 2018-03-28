@@ -9,17 +9,18 @@ var con = mysql.createConnection({
 });
 
 
-exports.insert = function(market, base, exchange, volume, gain) {
+exports.insert = function(market, base, exchange, volume, btcVolume, gain) {
 
   var symbol = `${exchange}:${market}${base}`;
-  var entry = [[symbol, market, base, exchange, (volume).toFixed(2), (gain).toFixed(2)]];
+  var entry = [[symbol, market, base, exchange, (volume).toFixed(2), (btcVolume).toFixed(2), (gain).toFixed(2)]];
 
   var sql = `INSERT INTO 
-              markets (symbol, market, base, exchange, volume, gain) 
+              markets (symbol, market, base, exchange, volume, btc_volume, gain) 
             VALUES 
               ? 
             ON DUPLICATE KEY UPDATE 
               volume = VALUES(volume),
+              btc_volume = VALUES(btc_volume),
               gain = VALUES(gain);`;
               
   con.query(sql, [entry], function (err, result) {
@@ -30,12 +31,12 @@ exports.insert = function(market, base, exchange, volume, gain) {
 
 exports.query = function(num, bases, exchanges, type, callback) {
 
-  if (type === "V") type = 'volume';
+  if (type === "V") type = 'btc_volume';
   else if (type === "G") type = 'gain';
   else return;
 
   var sql = `SELECT 
-              market, base, exchange, volume, gain
+              market, base, exchange, volume, btc_volume, gain
             FROM 
               markets
             WHERE
@@ -68,6 +69,7 @@ exports.init = function() {
                 \`base\` varchar(255) NOT NULL,
                 \`exchange\` varchar(255) NOT NULL,
                 \`volume\` numeric(11,2) NOT NULL,
+                \`btc_volume\` numeric(11,2) NOT NULL,
                 \`gain\` numeric(11,2) NOT NULL,
                 PRIMARY KEY( \`symbol\` )
               );`;

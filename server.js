@@ -8,19 +8,23 @@ var log = require('./js/log.js');
 // Initialise database
 database.init();
 
-function validateParameters(numTopVolume, baseCoin, type, doSort)
+function validateParameters(count, coins, exchanges, type)
 {
 
-   if (isNaN(numTopVolume) || numTopVolume <= 0)
+   if (isNaN(count) || count <= 0)
        return false;
 
-   if("BTC" != baseCoin && "ETH" != baseCoin && "BNB" != baseCoin && "USDT" != baseCoin)
-       return false;
+    for(var i = 0; i < coins.length; i++) {
+        if("BTC" != coins[i] && "ETH" != coins[i] && "BNB" != coins[i] && "USDT" != coins[i])
+            return false;
+    }
+
+    for(var i = 0; i < exchanges.length; i++) {
+        if("BINANCE" != exchanges[i] && "BITTREX" != exchanges[i])
+            return false;
+    }
 
    if("V" != type && "G" != type)
-       return false;
-
-   if(doSort!= 0 && doSort != 1)
        return false;
 
    return true;
@@ -68,6 +72,14 @@ app.get('/', function (req, res, next) {
     var coins = req.query.coins;
     var exchanges = req.query.exchanges;
     var type = req.query.type;
+
+    if(!validateParameters(count, coins, exchanges, type)) {
+        log.log(`Request at ip address ${req.ip} denied. Invalid Params-count:${count}, coins:${coins}, exchanges:${exchanges}, type:${type}.`);
+        res.send(500);
+        return;
+    }
+
+    log.log(`Request at ip address ${req.ip} accepted. Params-count:${count}, coins:${coins}, exchanges:${exchanges}, type:${type}.`);
 
     exchange.getSymbols(count, [coins], [exchanges], type, function(result) {
         res.json(result);

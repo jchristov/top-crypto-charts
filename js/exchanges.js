@@ -11,6 +11,25 @@ exports.getSymbols = function(topCount, bases, exchanges, type, callback)
 
 function processBinanceMarkets(json)
 {
+
+    // Get price of bases to help determine base price in btc for all markets
+    var BNBBTC = 0.0;
+    var ETHBTC = 0.0;
+    var USDTBTC = 0.0;
+
+    for(var i = 0; i < json.length; i++) {
+        var obj = json[i];
+
+        if(obj['symbol'] == 'BNBBTC') {
+            BNBBTC = obj['lastPrice'];
+        } else if(obj['symbol'] == 'ETHBTC') {
+            ETHBTC = obj['lastPrice'];
+        } else if(obj['symbol'] == 'BTCUSDT') {
+            USDTBTC = obj['lastPrice'];
+        }
+    }
+
+
     for(var i = 0; i < json.length; i++) {
         var obj = json[i];
 
@@ -19,6 +38,7 @@ function processBinanceMarkets(json)
         var base = "";
         var exchange = "BINANCE";
         var volume = parseFloat(obj["quoteVolume"]);
+        var btcVolume = 0.0;
         var gain = parseFloat(obj["priceChangePercent"]);
 
         if("BTC" == symbol.substr(symbol.length - 3))
@@ -39,13 +59,21 @@ function processBinanceMarkets(json)
             base = symbol.substr(symbol.length - 4);
         }
 
+        if(base == "BNB") {
+            btcVolume = volume * BNBBTC;
+        } else if (base == "BTC") {
+            btcVolume = volume;
+        } else if (base == "ETH") {
+            btcVolume = volume * ETHBTC;
+        } else if (base == "USDT") {
+            btcVolume = volume / USDTBTC;
+        }
+
         if(market != "" && base != "") // For some reason these are empty once on every binance api call. 
         {                               // Perhaps binance is returning an empty entry? Need to check.
-            database.insert(market, base, exchange, volume, gain);
+            database.insert(market, base, exchange, volume, btcVolume, gain);
         }
     }
-
-    //database.query(10, [['BTC']], [['BINANCE']], "G");
 }
 
 exports.BinanceMarketsRequest = function()
