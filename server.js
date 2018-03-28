@@ -2,7 +2,10 @@ var express = require('express');
 var app = express();
 var path = require('path');
 var log = require('./log.js');
+var database = require('./database.js');
 var binance = require('./binance.js');
+
+//database.createConnectionTest();
 
 function createMCCLink(symbols)
 {
@@ -67,6 +70,14 @@ refreshBinanceMarkets(); // execute function
 // REST API
 
 app.enable('trust proxy');
+
+app.use(function(error, request, response, next) {
+    console.log("Error handler: ", error);
+    // Send an error message to the user.
+    response.status(500).json({error:error.message});
+
+    // Optionally log the request options so you can analyze it later.
+});
 
 app.all('/', function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
