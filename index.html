@@ -82,8 +82,8 @@
                 var exchangeParam = "";
                 if($("#ibinance").prop("checked"))
                     exchangeParam = exchangeParam.concat("&exchanges[]=".concat($("#ibinance").attr("name")));
-                /*if($("#ibittrex").prop("checked"))
-                    exchangeParam = exchangeParam.concat("&exchanges[]=".concat($("#ibittrex").attr("name")));*/
+                if($("#ibittrex").prop("checked"))
+                    exchangeParam = exchangeParam.concat("&exchanges[]=".concat($("#ibittrex").attr("name")));
 
                 var typeParam = "&type=".concat($("#sType").val());
 
@@ -188,7 +188,7 @@
             <input id="ibinance" type="checkbox" name="BINANCE" value="1" checked>
             <label for="ibinance">Binance</label>
             <input id="ibittrex" type="checkbox" name="BITTREX" value="0">
-            <label for="ibittrex">Bittrex(coming soon)</label>
+            <label for="ibittrex">Bittrex</label>
         </div>
         <div>
             <select id="sType">

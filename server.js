@@ -30,17 +30,17 @@ function validateParameters(count, coins, exchanges, type)
    return true;
 }
 
-function refreshBinanceMarkets()
+// Set up automatic markets refresh
+function refreshMarkets()
 {
     x = 60;  // 60 Seconds
 
-    // Do your thing here
-    exchange.BinanceMarketsRequest()
+    exchange.BinanceMarketsRequest();
+    exchange.BittrexMarketsRequest();
 
-    setTimeout(refreshBinanceMarkets, x*1000);
+    setTimeout(refreshMarkets, x*1000);
 }
-
-refreshBinanceMarkets(); // execute function
+refreshMarkets();
 
 // REST API
 

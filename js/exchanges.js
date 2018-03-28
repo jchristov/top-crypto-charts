@@ -9,6 +9,8 @@ exports.getSymbols = function(topCount, bases, exchanges, type, callback)
     database.query(topCount, bases, exchanges, type, callback);
 }
 
+// BINANCE
+
 function processBinanceMarkets(json)
 {
 
@@ -74,6 +76,8 @@ function processBinanceMarkets(json)
             database.insert(market, base, exchange, volume, btcVolume, gain);
         }
     }
+
+    log.log(`Refreshed Binance Coins.`);
 }
 
 exports.BinanceMarketsRequest = function()
@@ -83,7 +87,7 @@ exports.BinanceMarketsRequest = function()
 
     var getRequest = https.get(url, res => {
 
-        log.log(`Refreshed Coins - statusCode:${res.statusCode}`);
+        log.log(`Refreshing Binance Coins - statusCode:${res.statusCode}.`);
 
         res.setEncoding("utf8");
         let body = "";
@@ -94,7 +98,97 @@ exports.BinanceMarketsRequest = function()
 
         res.on("end", () => {
             body = JSON.parse(body);
+
             processBinanceMarkets(body);
+        });
+    });
+
+    getRequest.on('error', function (err) {
+
+        log.log(err);
+    });
+}
+
+// BITTREX
+
+function processBittrexMarkets(json)
+{
+
+    // Get price of bases to help determine base price in btc for all markets
+    var ETHBTC = 0.0;
+    var USDTBTC = 0.0;
+
+    for(var i = 0; i < json.length; i++) {
+        var obj = json[i];
+
+        if(obj['MarketName'] == 'BTC-ETH') {
+            ETHBTC = obj['Last'];
+        } else if(obj['MarketName'] == 'USDT-BTC') {
+            USDTBTC = obj['Last'];
+        }
+    }
+
+    for(var i = 0; i < json.length; i++) {
+        var obj = json[i];
+
+        var symbol = obj["MarketName"].split('-');
+        var market = symbol[1];
+        var base = symbol[0];
+        var exchange = "BITTREX";
+        var volume = parseFloat(obj["BaseVolume"]);
+        var btcVolume = 0.0;
+        var low = parseFloat(obj["Low"]);
+        var high = parseFloat(obj["Last"]);
+        var gain = (high-low)/low*100.0;
+
+        if (base == "BTC") {
+            btcVolume = volume;
+        } else if (base == "ETH") {
+            btcVolume = volume * ETHBTC;
+        } else if (base == "USDT") {
+            btcVolume = volume / USDTBTC;
+        }
+
+
+        /*console.log(`Market: ${market}`);
+        console.log(`Base: ${base}`);
+        console.log(`Exchange: ${exchange}`);
+        console.log(`Volume: ${volume}`);
+        console.log(`BTCVolume: ${btcVolume}`); 
+        console.log(`Gain: ${gain}`);*/
+
+
+        database.insert(market, base, exchange, volume, btcVolume, gain);
+    }
+
+    log.log(`Refreshed Bittrex Coins.`);
+}
+
+exports.BittrexMarketsRequest = function()
+{
+    // No third party module required: https is part of the Node.js API
+    const url = "https://bittrex.com/api/v1.1/public/getmarketsummaries";
+
+    var getRequest = https.get(url, res => {
+
+        log.log(`Refreshing Bittrex Coins - statusCode:${res.statusCode}.`);
+
+        res.setEncoding("utf8");
+        let body = "";
+
+        res.on("data", data => {
+            body += data;
+        });
+
+        res.on("end", () => {
+            body = JSON.parse(body);
+
+            if(body['success']) {
+                processBittrexMarkets(body['result']);
+            } else {
+                log.log(body['message']);
+            }
+            
         });
     });
 
