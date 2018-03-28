@@ -6,7 +6,6 @@
 * Bittrex exchange added
 * Can now mix coins and exchanges in one link
 * The list of coins can be viewed in a table
-* Moved domain to www.topcryptocharts.io
 * Fancy new styling!
 
 ### Version 0.1
@@ -15,6 +14,7 @@
 * Watchlist file generated for www.tradingview.com
 
 ## To do
+* Get domain name
 * Add additional exchanges
 * Add additional time thresholds. e.g. Filter coin volume from past 12hrs, 4hrs, 1hr
 
