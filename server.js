@@ -1,71 +1,46 @@
 var express = require('express');
 var app = express();
 var path = require('path');
-var log = require('./log.js');
-var database = require('./database.js');
-var binance = require('./binance.js');
+var database = require('./js/database.js');
+var exchange = require('./js/exchanges.js');
+var log = require('./js/log.js');
 
-//database.createConnectionTest();
+// Initialise database
+database.init();
 
-function createMCCLink(symbols)
-{
-    var link = "https://www.multicoincharts.com/?"
-    for(var i = 0; i < symbols.length; i++)
-    {
-        link += "chart=BINANCE:";
-        link += symbols[i].symbol;
-
-        if(i != symbols.length-1)
-            link += "&"
-    }
-
-    return link;
-}
-
-function createTradingViewLink(symbols)
-{
-    var link = ""
-    for(var i = 0; i < symbols.length; i++)
-    {
-        link += "BINANCE:";
-        link += symbols[i].symbol;
-
-        if(i != symbols.length-1)
-            link += ","
-    }
-
-    return link;
-}
-
-function validateParameters(numTopVolume, baseCoin, type, doSort)
+function validateParameters(count, coins, exchanges, type)
 {
 
-   if (isNaN(numTopVolume) || numTopVolume <= 0)
+   if (isNaN(count) || count <= 0)
        return false;
 
-   if("BTC" != baseCoin && "ETH" != baseCoin && "BNB" != baseCoin && "USDT" != baseCoin)
-       return false;
+    for(var i = 0; i < coins.length; i++) {
+        if("BTC" != coins[i] && "ETH" != coins[i] && "BNB" != coins[i] && "USDT" != coins[i])
+            return false;
+    }
+
+    for(var i = 0; i < exchanges.length; i++) {
+        if("BINANCE" != exchanges[i] && "BITTREX" != exchanges[i])
+            return false;
+    }
 
    if("V" != type && "G" != type)
-       return false;
-
-   if(doSort!= 0 && doSort != 1)
        return false;
 
    return true;
 }
 
-function refreshBinanceMarkets()
+// Set up automatic markets refresh
+function refreshMarkets()
 {
     x = 60;  // 60 Seconds
 
-    // Do your thing here
-    binance.BinanceMarketsRequest()
+    exchange.BinanceMarketsRequest();
+    exchange.BittrexMarketsRequest();
 
-    setTimeout(refreshBinanceMarkets, x*1000);
+    setTimeout(refreshMarkets, x*1000);
 }
-
-refreshBinanceMarkets(); // execute function
+refreshMarkets();
 
 // REST API
 
@@ -94,39 +69,29 @@ app.get('/', function (req, res, next) {
 
  app.get('/link', function (req, res, next) {
 
-    if (!req.query.count || !req.query.coin || !req.query.type || !req.query.sort)
+    if (!req.query.count || !req.query.coins || !req.query.exchanges || !req.query.type)
     {
         log.log(`Request at ip address ${req.ip} denied. Invalid Params-Params missing.`);
         res.send(500);
         return;
     }
 
-    var numTopVolume = parseInt(req.query.count);
-    var baseCoin = req.query.coin;
+    var count = parseInt(req.query.count);
+    var coins = req.query.coins;
+    var exchanges = req.query.exchanges;
     var type = req.query.type;
-    var doSort = parseInt(req.query.sort);
 
-    if(!validateParameters(numTopVolume, baseCoin, type, doSort))
-    {
-        log.log(`Request at ip address ${req.ip} denied. Invalid Params-topCount:${numTopVolume},baseCoin:${baseCoin},type:${type},doSort:${doSort}`);
+    if(!validateParameters(count, coins, exchanges, type)) {
+        log.log(`Request at ip address ${req.ip} denied. Invalid Params-count:${count}, coins:${coins}, exchanges:${exchanges}, type:${type}.`);
         res.send(500);
         return;
     }
 
-    log.log(`Request at ip address ${req.ip} accepted. Params-topCount:${numTopVolume},baseCoin:${baseCoin},type:${type},doSort:${doSort}`);
+    log.log(`Request at ip address ${req.ip} accepted. Params-count:${count}, coins:${coins}, exchanges:${exchanges}, type:${type}.`);
 
-    var symbols = binance.getSymbols(numTopVolume, baseCoin, type, doSort)
-    var mccLink = createMCCLink(symbols);
-    var tvLink = createTradingViewLink(symbols);
-
-    res.json(
-        {
-            "mcc": mccLink,
-            "tv": tvLink
-        }
-    );
-
-    return next();
+    exchange.getSymbols(count, [coins], [exchanges], type, function(result) {
+        res.json(result);
+    });
  })
  
 var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080;

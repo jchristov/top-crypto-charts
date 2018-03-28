@@ -1,25 +1,142 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
-        <title>Binance Charts Generator</title>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <title>Top Crypto Charts</title>
+
+        <meta charset="utf-8"> 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <script>
+
+            var symbols;
+            var symbolsAlpha;
+            
+            function genLinks(data) {
+
+                //console.log(data);
+                var mcc = 'https://www.multicoincharts.com/?';
+                var tv = '';
+
+                for(var i = 0; i < data.length; i++) {
+
+                    var exchange = data[i]['exchange'];
+                    var market = data[i]['market'];
+                    var base = data[i]['base'];
+
+                    var symbol = exchange.concat(':', market, base);
+
+                    mcc = mcc.concat('chart=', symbol);
+                    tv = tv.concat(symbol);
+
+                    if(i != data.length-1)
+                    {
+                        mcc = mcc.concat('&');
+                        tv = tv.concat(',');
+                    }
+
+                }
+
+                $("#mcc").html(mcc);
+                $("#tv").html(tv);
+            }
+
+            function genTable(data) {
+                var txt = "";
+                txt += "<table class=\"table table-striped table-bordered table-responsive\">";
+                txt += "<tr>";
+                txt += "<th>Coin</th>";
+                txt += "<th>Base Coin</th>";
+                txt += "<th>Exchange</th>";
+                txt += "<th>Volume</th>";
+                txt += "<th>Volume (BTC)</th>";
+                txt += "<th>Gain (%)</th>";
+                txt += "</tr>";
+                for (var i in data) {
+                    txt += "<tr>";
+                    txt += "<td>" + data[i].market + "</td>";
+                    txt += "<td>" + data[i].base + "</td>";
+                    txt += "<td>" + data[i].exchange + "</td>";
+                    txt += "<td>" + data[i].volume + "</td>";
+                    txt += "<td>" + data[i].btc_volume + "</td>";
+                    
+                    txt += "<td";
+                    if(parseFloat(data[i].gain) < 0.0) 
+                        txt += " class=\"text-danger\">" + data[i].gain;
+                    else if(parseFloat(data[i].gain) > 0.0) 
+                        txt += " class=\"text-success\">+" + data[i].gain;
+                    else 
+                        txt += ">" + data[i].gain;
+                    txt += "%</tr>";
+                }
+                txt += "</table>"        
+                document.getElementById("table").innerHTML = txt;
+            }
 
             function getCharts() {
 
-                var url = "/link?";
-                
-                var topCountParam = "count=".concat($("#iCount").val());
-                var baseCoinParam = "&coin=".concat($("#sBase").val());
-                var typeParam = "&type=".concat($("#sType").val());
-                var sortParam = "&sort=".concat($("#isort").val());
 
-                url = url.concat(topCountParam, baseCoinParam, typeParam, sortParam);       
+                var url = "/link?";
+
+                var numCoinParam = "count=".concat($("#iCount").val());
+
+                var baseCoinParam = "";
+                if($("#ibnb").prop("checked"))
+                    baseCoinParam = baseCoinParam.concat("&coins[]=".concat($("#ibnb").attr("name")));
+                if($("#ibtc").prop("checked"))
+                    baseCoinParam = baseCoinParam.concat("&coins[]=".concat($("#ibtc").attr("name")));
+                if($("#ieth").prop("checked"))
+                    baseCoinParam = baseCoinParam.concat("&coins[]=".concat($("#ieth").attr("name")));
+                if($("#iusdt").prop("checked"))
+                    baseCoinParam = baseCoinParam.concat("&coins[]=".concat($("#iusdt").attr("name")));
+
+                var exchangeParam = "";
+                if($("#ibinance").prop("checked"))
+                    exchangeParam = exchangeParam.concat("&exchanges[]=".concat($("#ibinance").attr("name")));
+                if($("#ibittrex").prop("checked"))
+                    exchangeParam = exchangeParam.concat("&exchanges[]=".concat($("#ibittrex").attr("name")));
+
+                var typeParam = "&type=".concat($("#sType").val());
+
+                url = url.concat(numCoinParam, baseCoinParam, exchangeParam, typeParam);
                 
                 $.getJSON(url, function( data ) {
-                    $("#mcc").html(data["mcc"]);
-                    $("#tv").html(data["tv"]);
+
+                    symbols = data;
+                    symbolsAlpha = symbols.slice();
+                    sortByKey(symbolsAlpha, 'market');
+
+                    //sortOnClick();
+                    if($("#isort").prop("checked")) {
+                        genLinks(symbolsAlpha);
+                        genTable(symbolsAlpha);
+                    } else {
+                        genLinks(symbols);
+                        genTable(symbols);
+                    }
+
                 })
+
+            }
+
+            function sortOnClick() {
+
+                if($("#isort").prop("checked")) {
+                    genLinks(symbolsAlpha);
+                    genTable(symbolsAlpha);
+                } else {
+                    genLinks(symbols);
+                    genTable(symbols);
+                }
+            }
+
+            function sortByKey(array, key) {
+                return array.sort(function(a, b) {
+                    var x = a[key]; var y = b[key];
+                    return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+                });
             }
 
             function openMCC() {
@@ -62,53 +179,197 @@
                 });
             });
         </script>
+        <style>
+            .top-buffer { margin-top:5px; }
+            .break-word {
+            overflow-wrap: break-word;
+            }
+        </style>
     </head>
     <body>
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand">Top Crypto Charts</a>
+                </div>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="" data-toggle="modal" data-target="#logModal">Log</a></li>
+                    <li><a href="" data-toggle="modal" data-target="#helpModal">Help</a></li>
+                    <li><a href="https://github.com/cuppacoffee93/top-crypto-charts">GitHub</a></li>
+                </ul>
+            </div>
+        </nav>
 
-        <h1>Binance Charts Generator</h1>
-        <div>
-            <input id="iCount" type="number" value="10" pattern="[0-9]" autocomplete="off"/>
-            <label for="iCount">Number of coins</label>
-        </div>
-        <div>
-            <select id="sBase">
-                <option value="BNB">BNB</option>
-                <option selected="selected" value="BTC">BTC</option>
-                <option value="ETH">ETH</option>
-                <option value="USDT">USDT</option>
-              </select>
-              <label for="sBase">Base Coin</label>
-        </div>
-        <div>
-            <select id="sType">
-                <option value="V">Top Volume</option>
-                <option value="G">Top Gainers</option>
-            </select>
-        </div>
-        <div>
-            <input id="isort" type="checkbox" name="sort" value="0">
-            <label for="isort">Sort Symbols Alphabetically?</label>
-        </div>
-        <div>
-            <button id="bSubmit" type="button">Get Charts</button>
-        </div>
-        
+        <div class="container" style="margin-top:75px">
+            <div class="row top-buffer">
+                <div class="col-sm-4">
+                    <div class="row top-buffer">
+                        <div class="col-sm-12">
+                            <label for="countRow">Number of Coins</label>
+                        </div>
+                    </div>
+                    <div class="row" id="countRow">
+                        <div class="col-sm-12">
+                            <input id="iCount" class="form-control" type="number" value="10" pattern="[0-9]" autocomplete="off"/>
+                        </div>
+                    </div>
+                    <div class="row top-buffer">
+                        <div class="col-sm-12">
+                            <label for="coinsRow">Base Coin</label>
+                        </div>
+                    </div>
+                    <div class="row" id="coinsRow">
+                        <div class="col-sm-12">
+                            <label class="checkbox-inline"><input id="ibnb" type="checkbox" name="BNB" value="0">BNB</label>
+                            <label class="checkbox-inline"><input id="ibtc" type="checkbox" name="BTC" value="1" checked>BTC</label>
+                            <label class="checkbox-inline"><input id="ieth" type="checkbox" name="ETH" value="0">ETH</label>
+                            <label class="checkbox-inline"><input id="iusdt" type="checkbox" name="USDT" value="0">USDT</label>
+                        </div>
+                    </div>
+                    <div class="row top-buffer">
+                        <div class="col-sm-12">
+                            <label for="exchangesRow">Exchanges</label>
+                        </div>
+                    </div>
+                    <div class="row" id="exchangesRow">
+                        <div class="col-sm-12">
+                            <label class="checkbox-inline"><input id="ibinance" type="checkbox" name="BINANCE" value="1" checked>Binance</label>
+                            <label class="checkbox-inline"><input id="ibittrex" type="checkbox" name="BITTREX" value="0">Bittrex</label>
+                        </div>
+                    </div>
+                    <div class="row top-buffer">
+                        <div class="col-sm-12">
+                            <label for="typeRow">Type</label>
+                        </div>
+                    </div>
+                    <div class="row" id="typeRow">
+                        <div class="col-sm-12">
+                            <select class="form-control" id="sType">
+                                <option value="V">Top Volume</option>
+                                <option value="G">Top Gainers</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row top-buffer">
+                        <div class="col-sm-12">
+                            <button id="bSubmit" type="button" class="btn btn-primary">Get Coins</button>
+                        </div>
+                    </div>
+                    <div class="row top-buffer">
+                        <div class="col-sm-12">
+                            <label class="checkbox-inline"><input id="isort" type="checkbox" name="sort" onclick="sortOnClick();" value="0">Sort Symbols Alphabetically</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h2 id="hMCC">MCC</h2>
+                            <p id="mcc" style="display:none;" class="break-word"></p>
+                            <button id="bCopyMCC" type="button" class="btn" onClick="copyToClipboard('#mcc')">
+                                <span class="glyphicon glyphicon-copy"></span> Copy
+                            </button>
+                            <button id="bOpenMCC" type="button" class="btn" onClick="openMCC()">
+                                <span class="glyphicon glyphicon-eye-open"></span> open
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h2 id="h1TV">Trading View</h2>
+                            <p id="tv" style="display:none;" class="break-word"></p>
+                            <button id="bCopyTV" type="button" class="btn" onClick="copyToClipboard('#tv')">
+                                <span class="glyphicon glyphicon-copy"></span> Copy
+                            </button>
+                            <button id="bDownloadTV" type="button" class="btn" onClick="downloadTV()">
+                                    <span class="glyphicon glyphicon-cloud-download"></span> Download
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <p id="table"></p>
+                </div>
+            </div>
 
-        <div>
-            <h2 id="hMCC">MCC</h2>
-            <p id="mcc"></p>
-            <button id="bCopyMCC" type="button" onClick="copyToClipboard('#mcc')">Copy</button>
-            <button id="bOpenMCC" type="button" onClick="openMCC()">Open</button>
-        </div>
-        <br />
+            <!-- Modal -->
+            <div class="modal fade" id="logModal" role="dialog">
+                <div class="modal-dialog">
+                    
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Updates</h4>
+                        </div>
+                        <div class="modal-body">
+                            <h5 class="modal-title">Version 1.0</h4>
+                            <ul>
+                                <li>Bittrex exchange added</li>
+                                <li>Can now mix coins and exchanges in one link</li>
+                                <li>The list of coins can be viewed in a table</li>
+                                <li>Moved domain to www.topcryptocharts.io</li>
+                                <li>Fancy new styling!</li>
+                            </ul>
+                            <h5 class="modal-title">Version 0.1</h4>
+                            <ul>
+                                <li>Filter top volume and gainer coins from the Binance exchange from the past 24hrs</li>
+                                <li>Chart links generated for <a href="https://multicoincharts.com">www.multicoincharts.com</a></li>
+                                <li>Watchlist file generated for <a href="https://tradingview.com">www.tradingview.com</a></li>
+                            </ul>
+                        </div>
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">To do</h4>
+                        </div>
+                        <div class="modal-body">
+                            <ul>
+                                <li>Add additional exchanges</li>
+                                <li>Add additional time thresholds. e.g. Filter coin volume from past 12hrs, 4hrs, 1hr</li>
+                            </ul>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-        <div>
-            <h2 id="h1TV">Trading View</h2>
-            <p id="tv"></p>
-            <button id="bCopyTV" type="button" onClick="copyToClipboard('#tv')">Copy</button>
-            <button id="bDownloadTV" type="button" onClick="downloadTV()">Download</button>
-        </div>
-        <br />
+            <!-- Modal -->
+            <div class="modal fade" id="helpModal" role="dialog">
+                <div class="modal-dialog">
+                
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Help</h4>
+                        </div>
+                        <div class="modal-body">
 
+                            <p>Thanks for using Top Crypto Charts!</p>
+                            <br/>
+                            <p>Find the project on <a href="https://github.com/cuppacoffee93/charts-generator">GitHub</a> for the following:</p>
+                            <ul class="list-group">
+                                <li class="list-group-item">Report Bugs</li>
+                                <li class="list-group-item">New Features</li>
+                                <li class="list-group-item">Code Contributions</li>
+                            </ul>
+                            <br/>
+                            <p>For anything else, email me at cuppacoffee93@gmail.com.</p>
+                            <br/>
+                            <p>Thanks to the developers at <a href="https://multicoincharts.com">www.multicoincharts.com</a> for the amazing multi chart tool. You can show your support to their project by donating over on their site.</p>
+                            <br/>
+                            <p>If you find this project useful and would like to support it, dontations are always welcome :)</p>
+                            <p>BTC: 1z8biMfFw15ctKpvD5suc9Sa3RWVyQdfc</p>
+                            <p>ETH: 0xf776aE12d36Cffc81D66e662CC2f910FDf2E189b</p>
+                            <p>LTC: MVrtR3UpL5SdutM3AN9kFiQT7MvGggXuJT</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </body>
 </html>
