@@ -1,1 +1,1 @@
-# chart-generator
+# Top Crypto Charts
