@@ -8,36 +8,6 @@ var log = require('./js/log.js');
 // Initialise database
 database.init();
 
-function createMCCLink(symbols)
-{
-    var link = "https://www.multicoincharts.com/?"
-    for(var i = 0; i < symbols.length; i++)
-    {
-        link += "chart=BINANCE:";
-        link += symbols[i].symbol;
-
-        if(i != symbols.length-1)
-            link += "&"
-    }
-
-    return link;
-}
-
-function createTradingViewLink(symbols)
-{
-    var link = ""
-    for(var i = 0; i < symbols.length; i++)
-    {
-        link += "BINANCE:";
-        link += symbols[i].symbol;
-
-        if(i != symbols.length-1)
-            link += ","
-    }
-
-    return link;
-}
-
 function validateParameters(numTopVolume, baseCoin, type, doSort)
 {
 
@@ -99,54 +69,9 @@ app.get('/', function (req, res, next) {
     var exchanges = req.query.exchanges;
     var type = req.query.type;
 
-    console.log(`Count: ${count}`);
-    console.log(`Coins: ${coins}`);
-    console.log(`Exchanges: ${exchanges}`);
-    console.log(`Type: ${type}`);
-
-    //exchange.getSymbols(20, [['BTC']], [['BINANCE']], "G")
     exchange.getSymbols(count, [coins], [exchanges], type, function(result) {
-
-        //console.log(result);
-        //res.writeHead(200, { 'Content-Type': 'application/json'});
-
         res.json(result);
-        //res.end(JSON.stringify(result));
-        /*for(var i = 0; i < result.length; i++)
-        {
-            console.log(`Market: ${result[i].market}, Base: ${result[i].base}, Exchange: ${result[i].exchange}`);
-        }*/
     });
-
-    /*var numTopVolume = parseInt(req.query.count);
-    var baseCoin = req.query.coin;
-    var type = req.query.type;
-    var doSort = parseInt(req.query.sort);
-
-    if(!validateParameters(numTopVolume, baseCoin, type, doSort))
-    {
-        log.log(`Request at ip address ${req.ip} denied. Invalid Params-topCount:${numTopVolume},baseCoin:${baseCoin},type:${type},doSort:${doSort}`);
-        res.send(500);
-        return;
-    }
-
-    log.log(`Request at ip address ${req.ip} accepted. Params-topCount:${numTopVolume},baseCoin:${baseCoin},type:${type},doSort:${doSort}`);
-
-
-    exchanges.getSymbols(20, [['BTC']], [['BINANCE']], "G")*/
-
-    /*var symbols = exchanges.getSymbols(numTopVolume, baseCoin, type, doSort)
-    var mccLink = createMCCLink(symbols);
-    var tvLink = createTradingViewLink(symbols);
-
-    res.json(
-        {
-            "mcc": mccLink,
-            "tv": tvLink
-        }
-    );*/
-
-    //return next();
  })
  
 var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080;
