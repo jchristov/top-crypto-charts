@@ -2,7 +2,7 @@ var express = require('express');
 var app = express();
 var path = require('path');
 var database = require('./js/database.js');
-var exchanges = require('./js/exchanges.js');
+var exchange = require('./js/exchanges.js');
 var log = require('./js/log.js');
 
 // Initialise database
@@ -61,7 +61,7 @@ function refreshBinanceMarkets()
     x = 60;  // 60 Seconds
 
     // Do your thing here
-    exchanges.BinanceMarketsRequest()
+    exchange.BinanceMarketsRequest()
 
     setTimeout(refreshBinanceMarkets, x*1000);
 }
@@ -87,14 +87,38 @@ app.get('/', function (req, res, next) {
 
  app.get('/link', function (req, res, next) {
 
-    if (!req.query.count || !req.query.coin || !req.query.type || !req.query.sort)
+    if (!req.query.count || !req.query.coins || !req.query.exchanges || !req.query.type)
     {
         log.log(`Request at ip address ${req.ip} denied. Invalid Params-Params missing.`);
         res.send(500);
         return;
     }
 
-    var numTopVolume = parseInt(req.query.count);
+    var count = parseInt(req.query.count);
+    var coins = req.query.coins;
+    var exchanges = req.query.exchanges;
+    var type = req.query.type;
+
+    console.log(`Count: ${count}`);
+    console.log(`Coins: ${coins}`);
+    console.log(`Exchanges: ${exchanges}`);
+    console.log(`Type: ${type}`);
+
+    //exchange.getSymbols(20, [['BTC']], [['BINANCE']], "G")
+    exchange.getSymbols(count, [coins], [exchanges], type, function(result) {
+
+        //console.log(result);
+        //res.writeHead(200, { 'Content-Type': 'application/json'});
+
+        res.json(result);
+        //res.end(JSON.stringify(result));
+        /*for(var i = 0; i < result.length; i++)
+        {
+            console.log(`Market: ${result[i].market}, Base: ${result[i].base}, Exchange: ${result[i].exchange}`);
+        }*/
+    });
+
+    /*var numTopVolume = parseInt(req.query.count);
     var baseCoin = req.query.coin;
     var type = req.query.type;
     var doSort = parseInt(req.query.sort);
@@ -108,7 +132,10 @@ app.get('/', function (req, res, next) {
 
     log.log(`Request at ip address ${req.ip} accepted. Params-topCount:${numTopVolume},baseCoin:${baseCoin},type:${type},doSort:${doSort}`);
 
-    var symbols = exchanges.getSymbols(numTopVolume, baseCoin, type, doSort)
+
+    exchanges.getSymbols(20, [['BTC']], [['BINANCE']], "G")*/
+
+    /*var symbols = exchanges.getSymbols(numTopVolume, baseCoin, type, doSort)
     var mccLink = createMCCLink(symbols);
     var tvLink = createTradingViewLink(symbols);
 
@@ -117,9 +144,9 @@ app.get('/', function (req, res, next) {
             "mcc": mccLink,
             "tv": tvLink
         }
-    );
+    );*/
 
-    return next();
+    //return next();
  })
  
 var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080;

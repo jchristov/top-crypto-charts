@@ -3,55 +3,14 @@ var database = require('./database.js');
 var log = require('./log.js');
 var sort = require('./sort.js');
 
-var all_vol_symbols = []
-var all_gain_symbols = []
-
-exports.getSymbols2 = function(bases, type)
+exports.getSymbols = function(topCount, bases, exchanges, type, callback)
 {
-    var symbols = [];
 
-    for(var i = 0; i < bases.length; i++)
-    {
-        if(type == "V")
-            symbols.push(sort.getByBase(bases[i], all_vol_symbols).markets);
-        else if(type == "G")
-            symbols.push(sort.getByBase(base[i], all_gain_symbols).markets);
-    }
-
-    return symbols;
-}
-
-exports.getSymbols = function(topCount, base, type, doSort)
-{
-    var symbols = [];
-
-    if(type == "V")
-        symbols = sort.getByBase(base, all_vol_symbols);
-    else if(type == "G")
-        symbols = sort.getByBase(base, all_gain_symbols)
-
-    if (topCount < symbols.markets.length)
-        symbols = symbols.markets.slice(0, topCount);
-    else
-        symbols = symbols.markets;
-
-    if (doSort == 1)
-    {
-        symbols = symbols.sort(sort.compareBySymbol);
-    }
-
-    return symbols;
+    database.query(topCount, bases, exchanges, type, callback);
 }
 
 function processBinanceMarkets(json)
 {
-    var temp_vol_symbols = [];
-    var temp_gain_symbols = [];
-    var btc_symbols = [];
-    var eth_symbols = [];
-    var bnb_symbols = [];
-    var usdt_symbols = [];
-
     for(var i = 0; i < json.length; i++) {
         var obj = json[i];
 
@@ -66,110 +25,27 @@ function processBinanceMarkets(json)
         {
             market = symbol.substr(0, symbol.length - 3);
             base = symbol.substr(symbol.length - 3);
-
-            btc_symbols.push(
-                {
-                    symbol: symbol,
-                    volume: volume,
-                    gain: gain
-                }
-            );
         } else if ("ETH" == symbol.substr(symbol.length - 3))
         {
             market = symbol.substr(0, symbol.length - 3);
             base = symbol.substr(symbol.length - 3);
-
-            eth_symbols.push(
-                {
-                    symbol: symbol,
-                    volume: volume,
-                    gain: gain
-                }
-            );
         } else if ("BNB" == symbol.substr(symbol.length - 3))
         {
             market = symbol.substr(0, symbol.length - 3);
             base = symbol.substr(symbol.length - 3);
-
-            bnb_symbols.push(
-                {
-                    symbol: symbol,
-                    volume: volume,
-                    gain: gain
-                }
-            );
         } else if ("USDT" == symbol.substr(symbol.length - 4))
         {
             market = symbol.substr(0, symbol.length - 4);
             base = symbol.substr(symbol.length - 4);
-
-            usdt_symbols.push(
-                {
-                    symbol: symbol,
-                    volume: volume,
-                    gain: gain
-                }
-            );
         }
 
-        if(market != "" && base != "") // For some reason these are empty on once call. 
+        if(market != "" && base != "") // For some reason these are empty once on every binance api call. 
         {                               // Perhaps binance is returning an empty entry? Need to check.
             database.insert(market, base, exchange, volume, gain);
         }
     }
 
-    database.query(10, [['BTC']], [['BINANCE']], "G");
-
-    var btc_vol_symbols = btc_symbols.sort(sort.compareByVolume).slice();
-    var eth_vol_symbols = eth_symbols.sort(sort.compareByVolume).slice();
-    var bnb_vol_symbols = bnb_symbols.sort(sort.compareByVolume).slice();
-    var usdt_vol_symbols = usdt_symbols.sort(sort.compareByVolume).slice();
-
-    temp_vol_symbols.push(
-        {
-            base: "BTC",
-            markets: btc_vol_symbols
-        },
-        {
-            base: "ETH",
-            markets: eth_vol_symbols
-        },
-        {
-            base: "BNB",
-            markets: bnb_vol_symbols
-        },
-        {
-            base: "USDT",
-            markets: usdt_vol_symbols
-        },
-    );
-    
-    var btc_gain_symbols = btc_symbols.sort(sort.compareByGain).slice();
-    var eth_gain_symbols = eth_symbols.sort(sort.compareByGain).slice();
-    var bnb_gain_symbols = bnb_symbols.sort(sort.compareByGain).slice();
-    var usdt_gain_symbols = usdt_symbols.sort(sort.compareByGain).slice();
-    
-    temp_gain_symbols.push(
-        {
-            base: "BTC",
-            markets: btc_gain_symbols
-        },
-        {
-            base: "ETH",
-            markets: eth_gain_symbols
-        },
-        {
-            base: "BNB",
-            markets: bnb_gain_symbols
-        },
-        {
-            base: "USDT",
-            markets: usdt_gain_symbols
-        },
-    );
-
-    all_vol_symbols = temp_vol_symbols;    
-    all_gain_symbols = temp_gain_symbols;
+    //database.query(10, [['BTC']], [['BINANCE']], "G");
 }
 
 exports.BinanceMarketsRequest = function()

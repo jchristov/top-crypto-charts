@@ -28,14 +28,14 @@ exports.insert = function(market, base, exchange, volume, gain) {
 
 }
 
-exports.query = function(num, bases, exchanges, type) {
+exports.query = function(num, bases, exchanges, type, callback) {
 
   if (type === "V") type = 'volume';
   else if (type === "G") type = 'gain';
   else return;
 
   var sql = `SELECT 
-              market, base, exchange 
+              market, base, exchange, volume, gain
             FROM 
               markets
             WHERE
@@ -48,7 +48,10 @@ exports.query = function(num, bases, exchanges, type) {
 
   con.query(sql, [bases, exchanges, num], function (err, result, fields) {
     if (err) throw err;
-    console.log(result);
+
+    callback(result);
+
+    //return result;
   });
 
 }

@@ -5,21 +5,125 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
         <script>
 
+            var symbols;
+            var symbolsAlpha;
+            
+            function genLinks(data) {
+
+                //console.log(data);
+                var mcc = 'https://www.multicoincharts.com/?';
+                var tv = '';
+
+                for(var i = 0; i < data.length; i++) {
+
+                    var exchange = data[i]['exchange'];
+                    var market = data[i]['market'];
+                    var base = data[i]['base'];
+
+                    var symbol = exchange.concat(':', market, base);
+
+                    mcc = mcc.concat('chart=', symbol);
+                    tv = tv.concat(symbol);
+
+                    if(i != data.length-1)
+                    {
+                        mcc = mcc.concat('&');
+                        tv = tv.concat(':');
+                    }
+
+                }
+
+                $("#mcc").html(mcc);
+                $("#tv").html(tv);
+            }
+
+            function genTable(data) {
+                var txt = "";
+                txt += "<table border='1'>";
+                txt += "<tr>";
+                txt += "<th>Coin</th>";
+                txt += "<th>Base Coin</th>";
+                txt += "<th>Exchange</th>";
+                txt += "<th>Volume</th>";
+                txt += "<th>Gain</th>";
+                txt += "</tr>";
+                for (var i in data) {
+                    txt += "<tr>";
+                    txt += "<td>" + data[i].market + "</td>";
+                    txt += "<td>" + data[i].base + "</td>";
+                    txt += "<td>" + data[i].exchange + "</td>";
+                    txt += "<td>" + data[i].volume + "</td>";
+                    txt += "<td>" + data[i].gain + "</td>";
+                    txt += "</tr>";
+                }
+                txt += "</table>"        
+                document.getElementById("table").innerHTML = txt;
+            }
+
             function getCharts() {
 
-                var url = "/link?";
-                
-                var topCountParam = "count=".concat($("#iCount").val());
-                var baseCoinParam = "&coin=".concat($("#sBase").val());
-                var typeParam = "&type=".concat($("#sType").val());
-                var sortParam = "&sort=".concat($("#isort").val());
 
-                url = url.concat(topCountParam, baseCoinParam, typeParam, sortParam);       
+                var url = "/link?";
+
+                var numCoinParam = "count=".concat($("#iCount").val());
+
+                var baseCoinParam = "";
+                if($("#ibnb").prop("checked"))
+                    baseCoinParam = baseCoinParam.concat("&coins[]=".concat($("#ibnb").attr("name")));
+                if($("#ibtc").prop("checked"))
+                    baseCoinParam = baseCoinParam.concat("&coins[]=".concat($("#ibtc").attr("name")));
+                if($("#ieth").prop("checked"))
+                    baseCoinParam = baseCoinParam.concat("&coins[]=".concat($("#ieth").attr("name")));
+                if($("#iusdt").prop("checked"))
+                    baseCoinParam = baseCoinParam.concat("&coins[]=".concat($("#iusdt").attr("name")));
+
+                var exchangeParam = "";
+                if($("#ibinance").prop("checked"))
+                    exchangeParam = exchangeParam.concat("&exchanges[]=".concat($("#ibinance").attr("name")));
+                /*if($("#ibittrex").prop("checked"))
+                    exchangeParam = exchangeParam.concat("&exchanges[]=".concat($("#ibittrex").attr("name")));*/
+
+                var typeParam = "&type=".concat($("#sType").val());
+
+                url = url.concat(numCoinParam, baseCoinParam, exchangeParam, typeParam);
                 
                 $.getJSON(url, function( data ) {
-                    $("#mcc").html(data["mcc"]);
-                    $("#tv").html(data["tv"]);
+
+                    symbols = data;
+                    console.log(symbols);
+                    symbolsAlpha = symbols.slice();
+                    sortByKey(symbolsAlpha, 'market');
+                    console.log(symbolsAlpha);
+
+                    //sortOnClick();
+                    if($("#isort").prop("checked")) {
+                        genLinks(symbolsAlpha);
+                        genTable(symbolsAlpha);
+                    } else {
+                        genLinks(symbols);
+                        genTable(symbols);
+                    }
+
                 })
+
+            }
+
+            function sortOnClick() {
+
+                if($("#isort").prop("checked")) {
+                    genLinks(symbolsAlpha);
+                    genTable(symbolsAlpha);
+                } else {
+                    genLinks(symbols);
+                    genTable(symbols);
+                }
+            }
+
+            function sortByKey(array, key) {
+                return array.sort(function(a, b) {
+                    var x = a[key]; var y = b[key];
+                    return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+                });
             }
 
             function openMCC() {
@@ -71,13 +175,20 @@
             <label for="iCount">Number of coins</label>
         </div>
         <div>
-            <select id="sBase">
-                <option value="BNB">BNB</option>
-                <option selected="selected" value="BTC">BTC</option>
-                <option value="ETH">ETH</option>
-                <option value="USDT">USDT</option>
-              </select>
-              <label for="sBase">Base Coin</label>
+            <input id="ibnb" type="checkbox" name="BNB" value="0">
+            <label for="ibnb">BNB</label>
+            <input id="ibtc" type="checkbox" name="BTC" value="1" checked>
+            <label for="ibtc">BTC</label>
+            <input id="ieth" type="checkbox" name="ETH" value="0">
+            <label for="ieth">ETH</label>
+            <input id="iusdt" type="checkbox" name="USDT" value="0">
+            <label for="iusdt">USDT</label>
+        </div>
+        <div>
+            <input id="ibinance" type="checkbox" name="BINANCE" value="1" checked>
+            <label for="ibinance">Binance</label>
+            <input id="ibittrex" type="checkbox" name="BITTREX" value="0">
+            <label for="ibittrex">Bittrex(coming soon)</label>
         </div>
         <div>
             <select id="sType">
@@ -86,14 +197,12 @@
             </select>
         </div>
         <div>
-            <input id="isort" type="checkbox" name="sort" value="0">
-            <label for="isort">Sort Symbols Alphabetically?</label>
-        </div>
-        <div>
             <button id="bSubmit" type="button">Get Charts</button>
         </div>
-        
-
+        <div>
+            <input id="isort" type="checkbox" name="sort" onclick="sortOnClick();" value="0">
+            <label for="isort">Sort Symbols Alphabetically?</label>
+        </div>
         <div>
             <h2 id="hMCC">MCC</h2>
             <p id="mcc"></p>
@@ -110,5 +219,6 @@
         </div>
         <br />
 
+        <p id="table"></p>
     </body>
 </html>
