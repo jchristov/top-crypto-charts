@@ -14,8 +14,6 @@ exports.insert = function(market, base, exchange, volume, gain) {
   var symbol = `${exchange}:${market}${base}`;
   var entry = [[symbol, market, base, exchange, (volume).toFixed(2), (gain).toFixed(2)]];
 
-  console.log(entry);
-
   var sql = `INSERT INTO 
               markets (symbol, market, base, exchange, volume, gain) 
             VALUES 
@@ -23,9 +21,34 @@ exports.insert = function(market, base, exchange, volume, gain) {
             ON DUPLICATE KEY UPDATE 
               volume = VALUES(volume),
               gain = VALUES(gain);`;
+              
   con.query(sql, [entry], function (err, result) {
     if (err) throw err;
-    console.log("1 record inserted");
+  });
+
+}
+
+exports.query = function(num, bases, exchanges, type) {
+
+  if (type === "V") type = 'volume';
+  else if (type === "G") type = 'gain';
+  else return;
+
+  var sql = `SELECT 
+              market, base, exchange 
+            FROM 
+              markets
+            WHERE
+              base IN  ? AND
+              exchange IN ?
+            ORDER BY 
+              ${type} DESC
+            LIMIT ?
+              `;
+
+  con.query(sql, [bases, exchanges, num], function (err, result, fields) {
+    if (err) throw err;
+    console.log(result);
   });
 
 }

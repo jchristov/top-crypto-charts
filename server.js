@@ -1,13 +1,12 @@
 var express = require('express');
 var app = express();
 var path = require('path');
-var database = require('./database.js');
-var binance = require('./binance.js');
-var log = require('./log.js');
+var database = require('./js/database.js');
+var exchanges = require('./js/exchanges.js');
+var log = require('./js/log.js');
 
 // Initialise database
 database.init();
-//database.insert("ETH", "BTC", "BINANCE", 8000, 23);
 
 function createMCCLink(symbols)
 {
@@ -62,7 +61,7 @@ function refreshBinanceMarkets()
     x = 60;  // 60 Seconds
 
     // Do your thing here
-    binance.BinanceMarketsRequest()
+    exchanges.BinanceMarketsRequest()
 
     setTimeout(refreshBinanceMarkets, x*1000);
 }
@@ -109,7 +108,7 @@ app.get('/', function (req, res, next) {
 
     log.log(`Request at ip address ${req.ip} accepted. Params-topCount:${numTopVolume},baseCoin:${baseCoin},type:${type},doSort:${doSort}`);
 
-    var symbols = binance.getSymbols(numTopVolume, baseCoin, type, doSort)
+    var symbols = exchanges.getSymbols(numTopVolume, baseCoin, type, doSort)
     var mccLink = createMCCLink(symbols);
     var tvLink = createTradingViewLink(symbols);
 

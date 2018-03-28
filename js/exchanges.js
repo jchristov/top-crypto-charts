@@ -118,6 +118,8 @@ function processBinanceMarkets(json)
         }
     }
 
+    database.query(10, [['BTC']], [['BINANCE']], "G");
+
     var btc_vol_symbols = btc_symbols.sort(sort.compareByVolume).slice();
     var eth_vol_symbols = eth_symbols.sort(sort.compareByVolume).slice();
     var bnb_vol_symbols = bnb_symbols.sort(sort.compareByVolume).slice();
