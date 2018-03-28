@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Binance Charts Generator</title>
+        <title>Top Crypto Charts</title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
         <script>
 
@@ -90,10 +90,8 @@
                 $.getJSON(url, function( data ) {
 
                     symbols = data;
-                    console.log(symbols);
                     symbolsAlpha = symbols.slice();
                     sortByKey(symbolsAlpha, 'market');
-                    console.log(symbolsAlpha);
 
                     //sortOnClick();
                     if($("#isort").prop("checked")) {
@@ -169,7 +167,7 @@
     </head>
     <body>
 
-        <h1>Binance Charts Generator</h1>
+        <h1>Top Crypto Charts</h1>
         <div>
             <input id="iCount" type="number" value="10" pattern="[0-9]" autocomplete="off"/>
             <label for="iCount">Number of coins</label>
