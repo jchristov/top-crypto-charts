@@ -6,14 +6,14 @@
     "mysql": "^2.15.0"
   },
   "scripts": {
-    "start": "node server.js"
+    "start": "node topcryptocharts.js"
   },
-  "main": "server.js",
+  "main": "topcryptocharts.js",
   "description": "Used to generate charts for Trading View and MCC",
   "devDependencies": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cuppacoffee93/charts-generator.git"
+    "url": "git+https://github.com/cuppacoffee93/top-crypto-charts.git"
   },
   "keywords": [
     "charts"
@@ -21,7 +21,7 @@
   "author": "cuppacoffee",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/cuppacoffee93/charts-generator/issues"
+    "url": "https://github.com/cuppacoffee93/top-crypto-charts/issues"
   },
-  "homepage": "https://github.com/cuppacoffee93/charts-generator#readme"
+  "homepage": "https://github.com/cuppacoffee93/top-crypto-charts#readme"
 }
