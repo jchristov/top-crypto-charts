@@ -137,9 +137,9 @@ function processBittrexMarkets(json)
         var exchange = "BITTREX";
         var volume = parseFloat(obj["BaseVolume"]);
         var btcVolume = 0.0;
-        var low = parseFloat(obj["Low"]);
-        var high = parseFloat(obj["Last"]);
-        var gain = (high-low)/low*100.0;
+        var open = parseFloat(obj["PrevDay"]);
+        var close = parseFloat(obj["Last"]);
+        var gain = (close-open)/open*100.0;
 
         if (base == "BTC") {
             btcVolume = volume;
@@ -148,15 +148,6 @@ function processBittrexMarkets(json)
         } else if (base == "USDT") {
             btcVolume = volume / USDTBTC;
         }
-
-
-        /*console.log(`Market: ${market}`);
-        console.log(`Base: ${base}`);
-        console.log(`Exchange: ${exchange}`);
-        console.log(`Volume: ${volume}`);
-        console.log(`BTCVolume: ${btcVolume}`); 
-        console.log(`Gain: ${gain}`);*/
-
 
         database.insert(market, base, exchange, volume, btcVolume, gain);
     }
