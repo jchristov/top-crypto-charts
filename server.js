@@ -94,8 +94,8 @@ app.get('/', function (req, res, next) {
     });
  })
  
-var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080;
-var ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
+var port = process.env.TOP_CRYPTO_CHARTS_PORT || 8080;
+var ip   = process.env.TOP_CRYPTO_CHARTS_IP  || '0.0.0.0';
 
 var server = app.listen(port, ip, function () {
     var host = server.address().address
