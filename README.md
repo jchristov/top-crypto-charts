@@ -2,6 +2,9 @@
 
 ## Updates
 
+### Version 1.0.2
+* Fixed issue where Bittrex gain was not calculated properly
+
 ### Version 1.0.1
 * Now runs on domain - www.topcryptocharts.io
 
