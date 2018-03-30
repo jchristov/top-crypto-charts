@@ -35,9 +35,8 @@ function refreshMarkets()
 {
     x = 60;  // 60 Seconds
 
-    exchange.BinanceMarketsRequest();
-    exchange.BittrexMarketsRequest();
-
+    exchange.refreshMarkets();
+    
     setTimeout(refreshMarkets, x*1000);
 }
 refreshMarkets();
@@ -45,6 +44,9 @@ refreshMarkets();
 // REST API
 
 app.enable('trust proxy');
+
+// For images
+app.use(express.static(__dirname + '/img'));
 
 app.use(function(error, request, response, next) {
     console.log("Error handler: ", error);
