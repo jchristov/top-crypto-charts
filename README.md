@@ -2,6 +2,10 @@
 
 ## Updates
 
+### Version 1.0.4 (30/03/18)
+* Added Trading view preview chart pop up
+* Added Links to exchange, coinigy and trading view in table
+
 ### Version 1.0.3 (30/03/18)
 * Added exchange links to coins in table
 
