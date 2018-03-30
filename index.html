@@ -44,6 +44,11 @@
             }
 
             function genTable(data) {
+
+                var binanceLinkEx = "https://www.binance.com/trade.html?symbol=";
+                var bittrexLinkEx = "https://bittrex.com/Market/Index?MarketName="
+
+
                 var txt = "";
                 txt += "<table class=\"table table-striped table-bordered table-responsive\">";
                 txt += "<tr>";
@@ -56,7 +61,13 @@
                 txt += "</tr>";
                 for (var i in data) {
                     txt += "<tr>";
-                    txt += "<td>" + data[i].market + "</td>";
+                    txt += "<td><a href=\"";
+                    if(data[i].exchange == "BINANCE") {
+                        txt += binanceLinkEx + data[i].market + "_" + data[i].base;
+                    } else if(data[i].exchange == "BITTREX") {
+                        txt += bittrexLinkEx + data[i].base + "-" + data[i].market;
+                    }
+                    txt += "\" target=\"_blank\">" + data[i].market + "</a></td>";
                     txt += "<td>" + data[i].base + "</td>";
                     txt += "<td>" + data[i].exchange + "</td>";
                     txt += "<td>" + data[i].volume + "</td>";
@@ -301,22 +312,26 @@
                             <h4 class="modal-title">Updates</h4>
                         </div>
                         <div class="modal-body">
-                            <h5 class="modal-title">Version 1.0.2</h4>
+                            <h5 class="modal-title">Version 1.0.3 (30/04/18)</h4>
+                                <ul>
+                                    <li>Added exchange links to coins in table</li>
+                                </ul>
+                            <h5 class="modal-title">Version 1.0.2 (29/04/18)</h4>
                             <ul>
                                 <li>Fixed issue where Bittrex gain was not calculated properly</li>
                             </ul>
-			                <h5 class="modal-title">Version 1.0.1</h4>
+			                <h5 class="modal-title">Version 1.0.1 (29/04/18)</h4>
                             <ul>
                                 <li>Using new domain - www.topcryptocharts.io</li>
                             </ul>
-                            <h5 class="modal-title">Version 1.0.0</h4>
+                            <h5 class="modal-title">Version 1.0.0 (28/04/18)</h4>
                             <ul>
                                 <li>Bittrex exchange added</li>
                                 <li>Can now mix coins and exchanges in one link</li>
                                 <li>The list of coins can be viewed in a table</li>
                                 <li>Fancy new styling!</li>
                             </ul>
-                            <h5 class="modal-title">Version 0.1.0</h4>
+                            <h5 class="modal-title">Version 0.1.0 (25/04/18)</h4>
                             <ul>
                                 <li>Filter top volume and gainer coins from the Binance exchange from the past 24hrs</li>
                                 <li>Chart links generated for <a href="https://multicoincharts.com">www.multicoincharts.com</a></li>
@@ -330,6 +345,10 @@
                             <ul>
                                 <li>Add additional exchanges</li>
                                 <li>Add additional time thresholds. e.g. Filter coin volume from past 12hrs, 4hrs, 1hr</li>
+                                <li>Add trading view chart pop up to preview coin</li>
+                                <li>Add option to filter coins by volatility over multiple time periods</li>
+                                <li>Add option to filter coins by volume difference over multiple time periods</li>
+
                             </ul>
                         </div>
                         <div class="modal-footer">
