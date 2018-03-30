@@ -12,3 +12,8 @@ exports.refreshMarkets = function() {
     binance.BinanceMarketsRequest();
     bittrex.BittrexMarketsRequest();
 }
+
+exports.binWebSocketTest = function() {
+
+    binance.StartBinanceMarketStream();
+}

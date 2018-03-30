@@ -1,6 +1,14 @@
 const https = require('https');
 const database = require('./database.js');
 const log = require('./log.js');
+const binanceAPI = require('node-binance-api');
+
+binanceAPI.options({
+  APIKEY: '<key>',
+  APISECRET: '<secret>',
+  useServerTime: true
+
+});
 
 function processBinanceMarkets(json)
 {
@@ -98,4 +106,20 @@ exports.BinanceMarketsRequest = function()
 
         log.log(err);
     });
+}
+
+exports.StartBinanceMarketStream = function() {
+
+    binanceAPI.websockets.candlesticks(['BNBBTC'], "1m", (candlesticks) => {
+        let { e:eventType, E:eventTime, s:symbol, k:ticks } = candlesticks;
+        let { o:open, h:high, l:low, c:close, v:volume, n:trades, i:interval, x:isFinal, q:quoteVolume, V:buyVolume, Q:quoteBuyVolume } = ticks;
+        console.log(symbol+" "+interval+" candlestick update");
+        console.log("open: "+open);
+        console.log("high: "+high);
+        console.log("low: "+low);
+        console.log("close: "+close);
+        console.log("volume: "+volume);
+        console.log("isFinal: "+isFinal);
+      });
+
 }

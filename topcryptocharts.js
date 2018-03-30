@@ -41,6 +41,9 @@ function refreshMarkets()
 }
 refreshMarkets();
 
+exchange.binWebSocketTest();
+
+
 // REST API
 
 app.enable('trust proxy');
