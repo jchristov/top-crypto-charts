@@ -57,6 +57,7 @@
                 txt += "<th>Volume</th>";
                 txt += "<th>Volume (BTC)</th>";
                 txt += "<th>Gain (%)</th>";
+                txt += "<th>Volatility (%)</th>";
                 txt += "<th>Links</th>";
                 txt += "</tr>";
                 for (var i in data) {
@@ -91,8 +92,10 @@
                         txt += " class=\"text-success\">+" + data[i].gain;
                     else 
                         txt += ">" + data[i].gain;
-
                     txt += "%</td>";
+
+                    // Coin volatility difference Column
+                    txt += "<td>" + data[i].volatility + "%</td>";
                     
                     // Links column
                     txt += "<td>";
@@ -331,8 +334,9 @@
                                             <div class="row" id="typeRow">
                                                 <div class="col-sm-12">
                                                     <select class="form-control" id="sType">
-                                                        <option value="V">Top Volume</option>
-                                                        <option value="G">Top Gainers</option>
+                                                        <option value="0">Top Volume</option>
+                                                        <option value="1">Top Gainers</option>
+                                                        <option value="2">Top Volatile</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -397,10 +401,22 @@
                             <h4 class="modal-title">Updates</h4>
                         </div>
                         <div class="modal-body">
+
+                            <h5 class="modal-title">Version 1.1.0 (30/03/18)</h4>
+                            <ul>
+                                <li>Added volatility filtering</li>
+                            </ul>
+
+                            <h5 class="modal-title">Version 1.0.4 (30/03/18)</h4>
+                            <ul>
+                                <li>Added Trading view preview chart pop up</li>
+                                <li>Added Links to exchange, coinigy and trading view in table</li>
+                            </ul>
+
                             <h5 class="modal-title">Version 1.0.3 (30/03/18)</h4>
-                                <ul>
-                                    <li>Added exchange links to coins in table</li>
-                                </ul>
+                            <ul>
+                                <li>Added exchange links to coins in table</li>
+                            </ul>
                             <h5 class="modal-title">Version 1.0.2 (29/03/18)</h4>
                             <ul>
                                 <li>Fixed issue where Bittrex gain was not calculated properly</li>

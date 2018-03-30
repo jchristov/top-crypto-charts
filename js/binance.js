@@ -34,6 +34,9 @@ function processBinanceMarkets(json)
     for(var i = 0; i < json.length; i++) {
         var obj = json[i];
 
+        //"highPrice": "100.00000000",
+        //"lowPrice": "0.10000000",
+
         var symbol = obj["symbol"];
         var market = "";
         var base = "";
@@ -41,6 +44,9 @@ function processBinanceMarkets(json)
         var volume = parseFloat(obj["quoteVolume"]);
         var btcVolume = 0.0;
         var gain = parseFloat(obj["priceChangePercent"]);
+        var low = parseFloat(obj["lowPrice"]);
+        var high = parseFloat(obj["highPrice"]);
+        var volatility = (high-low)/low*100.0;
 
         if("BTC" == symbol.substr(symbol.length - 3))
         {
@@ -72,7 +78,7 @@ function processBinanceMarkets(json)
 
         if(market != "" && base != "") // For some reason these are empty once on every binance api call. 
         {                               // Perhaps binance is returning an empty entry? Need to check.
-            database.insert(market, base, exchange, volume, btcVolume, gain);
+            database.insert(market, base, exchange, volume, btcVolume, gain, volatility);
         }
     }
 

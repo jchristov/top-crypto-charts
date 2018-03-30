@@ -29,8 +29,11 @@ function processBittrexMarkets(json)
         var volume = parseFloat(obj["BaseVolume"]);
         var btcVolume = 0.0;
         var open = parseFloat(obj["PrevDay"]);
-        var close = parseFloat(obj["Last"]);
-        var gain = (close-open)/open*100.0;
+        var last = parseFloat(obj["Last"]);
+        var gain = (last-open)/open*100.0;
+        var low =  parseFloat(obj["Low"]);
+        var high =  parseFloat(obj["High"]);
+        var volatility = (high-low)/low*100.0;
 
         if (base == "BTC") {
             btcVolume = volume;
@@ -40,7 +43,7 @@ function processBittrexMarkets(json)
             btcVolume = volume / USDTBTC;
         }
 
-        database.insert(market, base, exchange, volume, btcVolume, gain);
+        database.insert(market, base, exchange, volume, btcVolume, gain, volatility);
     }
 
     log.log(`Refreshed Bittrex Coins.`);
