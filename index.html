@@ -286,87 +286,100 @@
         <div class="container" style="margin-top:75px">
             <div class="row top-buffer">
                 <div class="col-sm-4">
-                    <div class="row top-buffer">
-                        <div class="col-sm-12">
-                            <label for="countRow">Number of Coins</label>
-                        </div>
-                    </div>
-                    <div class="row" id="countRow">
-                        <div class="col-sm-12">
-                            <input id="iCount" class="form-control" type="number" value="10" pattern="[0-9]" autocomplete="off"/>
-                        </div>
-                    </div>
-                    <div class="row top-buffer">
-                        <div class="col-sm-12">
-                            <label for="coinsRow">Base Coin</label>
-                        </div>
-                    </div>
-                    <div class="row" id="coinsRow">
-                        <div class="col-sm-12">
-                            <label class="checkbox-inline"><input id="ibnb" type="checkbox" name="BNB" value="0">BNB</label>
-                            <label class="checkbox-inline"><input id="ibtc" type="checkbox" name="BTC" value="1" checked>BTC</label>
-                            <label class="checkbox-inline"><input id="ieth" type="checkbox" name="ETH" value="0">ETH</label>
-                            <label class="checkbox-inline"><input id="iusdt" type="checkbox" name="USDT" value="0">USDT</label>
-                        </div>
-                    </div>
-                    <div class="row top-buffer">
-                        <div class="col-sm-12">
-                            <label for="exchangesRow">Exchanges</label>
-                        </div>
-                    </div>
-                    <div class="row" id="exchangesRow">
-                        <div class="col-sm-12">
-                            <label class="checkbox-inline"><input id="ibinance" type="checkbox" name="BINANCE" value="1" checked>Binance</label>
-                            <label class="checkbox-inline"><input id="ibittrex" type="checkbox" name="BITTREX" value="0">Bittrex</label>
-                        </div>
-                    </div>
-                    <div class="row top-buffer">
-                        <div class="col-sm-12">
-                            <label for="typeRow">Type</label>
-                        </div>
-                    </div>
-                    <div class="row" id="typeRow">
-                        <div class="col-sm-12">
-                            <select class="form-control" id="sType">
-                                <option value="V">Top Volume</option>
-                                <option value="G">Top Gainers</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row top-buffer">
-                        <div class="col-sm-12">
-                            <button id="bSubmit" type="button" class="btn btn-primary">Get Coins</button>
-                        </div>
-                    </div>
-                    <div class="row top-buffer">
-                        <div class="col-sm-12">
-                            <label class="checkbox-inline"><input id="isort" type="checkbox" name="sort" onclick="sortOnClick();" value="0">Sort Symbols Alphabetically</label>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <h2 id="hMCC">MCC</h2>
-                            <p id="mcc" style="display:none;" class="break-word"></p>
-                            <button id="bCopyMCC" type="button" class="btn" onClick="copyToClipboard('#mcc')">
-                                <span class="glyphicon glyphicon-copy"></span> Copy
-                            </button>
-                            <button id="bOpenMCC" type="button" class="btn" onClick="openMCC()">
-                                <span class="glyphicon glyphicon-eye-open"></span> open
-                            </button>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <h2 id="h1TV">Trading View</h2>
-                            <p id="tv" style="display:none;" class="break-word"></p>
-                            <button id="bCopyTV" type="button" class="btn" onClick="copyToClipboard('#tv')">
-                                <span class="glyphicon glyphicon-copy"></span> Copy
-                            </button>
-                            <button id="bDownloadTV" type="button" class="btn" onClick="downloadTV()">
-                                    <span class="glyphicon glyphicon-cloud-download"></span> Download
-                            </button>
-                        </div>
-                    </div>
+                    <div class="panel panel-default">
+                                <div class="panel-heading">Customise Top Coins</div>
+                                <div class="panel-body">
+                                        <div class="row top-buffer">
+                                                <div class="col-sm-12">
+                                                    <label for="countRow">Number of Coins</label>
+                                                </div>
+                                            </div>
+                                            <div class="row" id="countRow">
+                                                <div class="col-sm-12">
+                                                    <input id="iCount" class="form-control" type="number" value="10" pattern="[0-9]" autocomplete="off"/>
+                                                </div>
+                                            </div>
+                                            <div class="row top-buffer">
+                                                <div class="col-sm-12">
+                                                    <label for="coinsRow">Base Coin</label>
+                                                </div>
+                                            </div>
+                                            <div class="row" id="coinsRow">
+                                                <div class="col-sm-12">
+                                                    <label class="checkbox-inline"><input id="ibnb" type="checkbox" name="BNB" value="0">BNB</label>
+                                                    <label class="checkbox-inline"><input id="ibtc" type="checkbox" name="BTC" value="1" checked>BTC</label>
+                                                    <label class="checkbox-inline"><input id="ieth" type="checkbox" name="ETH" value="0">ETH</label>
+                                                    <label class="checkbox-inline"><input id="iusdt" type="checkbox" name="USDT" value="0">USDT</label>
+                                                </div>
+                                            </div>
+                                            <div class="row top-buffer">
+                                                <div class="col-sm-12">
+                                                    <label for="exchangesRow">Exchanges</label>
+                                                </div>
+                                            </div>
+                                            <div class="row" id="exchangesRow">
+                                                <div class="col-sm-12">
+                                                    <label class="checkbox-inline"><input id="ibinance" type="checkbox" name="BINANCE" value="1" checked>Binance</label>
+                                                    <label class="checkbox-inline"><input id="ibittrex" type="checkbox" name="BITTREX" value="0">Bittrex</label>
+                                                </div>
+                                            </div>
+                                            <div class="row top-buffer">
+                                                <div class="col-sm-12">
+                                                    <label for="typeRow">Type</label>
+                                                </div>
+                                            </div>
+                                            <div class="row" id="typeRow">
+                                                <div class="col-sm-12">
+                                                    <select class="form-control" id="sType">
+                                                        <option value="V">Top Volume</option>
+                                                        <option value="G">Top Gainers</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="row top-buffer">
+                                                <div class="col-sm-12">
+                                                    <button id="bSubmit" type="button" class="btn btn-primary">Get Coins</button>
+                                                </div>
+                                            </div>
+                                            <div class="row top-buffer">
+                                                <div class="col-sm-12">
+                                                    <label class="checkbox-inline"><input id="isort" type="checkbox" name="sort" onclick="sortOnClick();" value="0">Sort Symbols Alphabetically</label>
+                                                </div>
+                                            </div>
+                                </div>
+                              </div>
+
+                              <div class="panel panel-default">
+                                    <div class="panel-heading">Top Coin Links</div>
+                                    <div class="panel-body">
+                                            <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <h2 id="hMCC">Multi Coin Charts</h2>
+                                                        <p id="mcc" style="display:none;" class="break-word"></p>
+                                                        <button id="bCopyMCC" type="button" class="btn" onClick="copyToClipboard('#mcc')">
+                                                            <span class="glyphicon glyphicon-copy"></span> Copy
+                                                        </button>
+                                                        <button id="bOpenMCC" type="button" class="btn" onClick="openMCC()">
+                                                            <span class="glyphicon glyphicon-eye-open"></span> open
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <h2 id="h1TV">Trading View</h2>
+                                                        <p id="tv" style="display:none;" class="break-word"></p>
+                                                        <button id="bCopyTV" type="button" class="btn" onClick="copyToClipboard('#tv')">
+                                                            <span class="glyphicon glyphicon-copy"></span> Copy
+                                                        </button>
+                                                        <button id="bDownloadTV" type="button" class="btn" onClick="downloadTV()">
+                                                                <span class="glyphicon glyphicon-cloud-download"></span> Download
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                    </div>
+                                  </div>
+                    
+                    
                 </div>
                 <div class="col-sm-8">
                     <p id="table"></p>
