@@ -33,7 +33,7 @@ function validateParameters(count, coins, exchanges, type)
 // Set up automatic markets refresh
 function refreshMarkets()
 {
-    x = 60;  // 60 Seconds
+    x = 300;  // 5 Mins
 
     exchange.refreshMarkets();
     
