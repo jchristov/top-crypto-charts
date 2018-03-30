@@ -46,8 +46,7 @@
             function genTable(data) {
 
                 var binanceLinkEx = "https://www.binance.com/trade.html?symbol=";
-                var bittrexLinkEx = "https://bittrex.com/Market/Index?MarketName="
-
+                var bittrexLinkEx = "https://bittrex.com/Market/Index?MarketName=";
 
                 var txt = "";
                 txt += "<table class=\"table table-striped table-bordered table-responsive\">";
@@ -58,21 +57,33 @@
                 txt += "<th>Volume</th>";
                 txt += "<th>Volume (BTC)</th>";
                 txt += "<th>Gain (%)</th>";
+                txt += "<th>Links</th>";
                 txt += "</tr>";
                 for (var i in data) {
                     txt += "<tr>";
-                    txt += "<td><a href=\"";
-                    if(data[i].exchange == "BINANCE") {
-                        txt += binanceLinkEx + data[i].market + "_" + data[i].base;
-                    } else if(data[i].exchange == "BITTREX") {
-                        txt += bittrexLinkEx + data[i].base + "-" + data[i].market;
-                    }
-                    txt += "\" target=\"_blank\">" + data[i].market + "</a></td>";
+                    
+                    // Coin Column with Trading view pop up chart
+                    txt += "<td>"
+                    txt += "<a href=\"#\" data-toggle=\"modal\" data-target=\"#chartModal\" onclick=\"getTVPreview('";
+                    txt += data[i].exchange + ":" + data[i].market + data[i].base;
+                    txt += "');return false;\">";
+                    txt += data[i].market;
+                    txt += "</a>";
+                    txt += "</td>";
+
+                    // Base Column
                     txt += "<td>" + data[i].base + "</td>";
+
+                    // Exchange Column
                     txt += "<td>" + data[i].exchange + "</td>";
+
+                    // Volume Column
                     txt += "<td>" + data[i].volume + "</td>";
+
+                    // Volume BTC Column
                     txt += "<td>" + data[i].btc_volume + "</td>";
                     
+                    // Coin price difference Column
                     txt += "<td";
                     if(parseFloat(data[i].gain) < 0.0) 
                         txt += " class=\"text-danger\">" + data[i].gain;
@@ -80,7 +91,50 @@
                         txt += " class=\"text-success\">+" + data[i].gain;
                     else 
                         txt += ">" + data[i].gain;
-                    txt += "%</tr>";
+
+                    txt += "%</td>";
+                    
+                    // Links column
+                    txt += "<td>";
+                    
+                        var exchangelink = "";
+                        var exchangeImg = "";
+                        var coinigyLink = "https://www.coinigy.com/main/markets/";
+                        var tradingViewLink = "https://www.tradingview.com/chart/?symbol=" + data[i].exchange + ":" + data[i].market + data[i].base;;
+                        if(data[i].exchange == "BINANCE") {
+                            exchangelink = binanceLinkEx + data[i].market + "_" + data[i].base;
+                            exchangeImg = "/binance.png";
+                            coinigyLink += "bina/" + data[i].market + "/" + data[i].base;
+                        } else if(data[i].exchange == "BITTREX") {
+                            exchangelink = bittrexLinkEx + data[i].base + "-" + data[i].market;
+                            exchangeImg = "/bittrex.png";
+                            coinigyLink += "btrx/" + data[i].market + "/" + data[i].base;
+                        }
+
+
+                        txt += "<a href=\"";
+                        txt += exchangelink;
+                        txt += "\" target=\"_blank\">";
+                        txt += "<img src=\"";
+                        txt += exchangeImg;
+                        txt += "\" alt=\"Exchange\" height=\"20\" width=\"20\">";
+                        txt +="</a>";
+
+                        txt += "<a href=\"";
+                        txt += coinigyLink;
+                        txt += "\" target=\"_blank\">";
+                        txt += "<img src=\"/coinigy.png\" alt=\"Exchange\" height=\"20\" width=\"20\">";
+                        txt +="</a>";
+
+                        txt += "<a href=\"";
+                        txt += tradingViewLink;
+                        txt += "\" target=\"_blank\">";
+                        txt += "<img src=\"/tradingview.png\" alt=\"Exchange\" height=\"20\" width=\"20\">";
+                        txt +="</a>";
+                    
+                    txt += "</td>";
+
+                    txt += "</tr>";
                 }
                 txt += "</table>"        
                 document.getElementById("table").innerHTML = txt;
@@ -129,6 +183,24 @@
                     }
 
                 })
+
+            }
+
+            function getTVPreview(symbol) {
+
+                new TradingView.widget(
+                {
+                    "symbol": symbol,
+                    "interval": "60",
+                    "timezone": "Etc/UTC",
+                    "theme": "Light",
+                    "style": "1",
+                    "locale": "uk",
+                    "toolbar_bg": "#f1f3f6",
+                    "enable_publishing": false,
+                    "allow_symbol_change": false,
+                    "container_id": "tradingview_9c53c"
+                });
 
             }
 
@@ -391,6 +463,46 @@
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="chartModal" role="dialog">
+                <div class="modal-dialog modal-lg">
+                
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body tv-chart-preview">
+
+                            <!-- TradingView Widget BEGIN -->
+                            <div class="tradingview-widget-container">
+                                <div id="tradingview_9c53c"></div>
+                                <div class="tradingview-widget-copyright"><a href="https://uk.tradingview.com/symbols/BINANCE-TRXBTC/" rel="noopener" target="_blank"><span class="blue-text">TRXBTC</span> <span class="blue-text">chart</span> by TradingView</a></div>
+                                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                                <script type="text/javascript">
+                                    new TradingView.widget(
+                                    {
+                                        "symbol": "BINANCE:ADABTC",
+                                        "interval": "60",
+                                        "timezone": "Etc/UTC",
+                                        "theme": "Light",
+                                        "style": "1",
+                                        "locale": "uk",
+                                        "toolbar_bg": "#f1f3f6",
+                                        "enable_publishing": false,
+                                        "allow_symbol_change": false,
+                                        "container_id": "tradingview_9c53c"
+                                    });
+                                </script>
+                            </div>
+                            <!-- TradingView Widget END -->
+    
+                        </div>
+                       
                     </div>
                 </div>
             </div>

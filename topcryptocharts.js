@@ -45,6 +45,9 @@ refreshMarkets();
 
 app.enable('trust proxy');
 
+// For images
+app.use(express.static(__dirname + '/img'));
+
 app.use(function(error, request, response, next) {
     console.log("Error handler: ", error);
     // Send an error message to the user.
