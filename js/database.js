@@ -9,19 +9,20 @@ var con = mysql.createConnection({
 });
 
 
-exports.insert = function(market, base, exchange, volume, btcVolume, gain) {
+exports.insert = function(market, base, exchange, volume, btcVolume, gain, volatility) {
 
   var symbol = `${exchange}:${market}${base}`;
-  var entry = [[symbol, market, base, exchange, (volume).toFixed(2), (btcVolume).toFixed(2), (gain).toFixed(2)]];
+  var entry = [[symbol, market, base, exchange, (volume).toFixed(2), (btcVolume).toFixed(2), (gain).toFixed(2), (volatility).toFixed(2)]];
 
   var sql = `INSERT INTO 
-              markets (symbol, market, base, exchange, volume, btc_volume, gain) 
+              markets (symbol, market, base, exchange, volume, btc_volume, gain, volatility) 
             VALUES 
               ? 
             ON DUPLICATE KEY UPDATE 
               volume = VALUES(volume),
               btc_volume = VALUES(btc_volume),
-              gain = VALUES(gain);`;
+              gain = VALUES(gain),
+              volatility = VALUES(volatility);`;
               
   con.query(sql, [entry], function (err, result) {
     if (err) throw err;
@@ -31,12 +32,13 @@ exports.insert = function(market, base, exchange, volume, btcVolume, gain) {
 
 exports.query = function(num, bases, exchanges, type, callback) {
 
-  if (type === "V") type = 'btc_volume';
-  else if (type === "G") type = 'gain';
+  if (type === 0) type = 'btc_volume';
+  else if (type === 1) type = 'gain';
+  else if (type === 2) type = 'volatility';
   else return;
 
   var sql = `SELECT 
-              market, base, exchange, volume, btc_volume, gain
+              market, base, exchange, volume, btc_volume, gain, volatility
             FROM 
               markets
             WHERE
@@ -71,6 +73,7 @@ exports.init = function() {
                 \`volume\` numeric(11,2) NOT NULL,
                 \`btc_volume\` numeric(11,2) NOT NULL,
                 \`gain\` numeric(11,2) NOT NULL,
+                \`volatility\` numeric(11,2) NOT NULL,
                 PRIMARY KEY( \`symbol\` )
               );`;
   

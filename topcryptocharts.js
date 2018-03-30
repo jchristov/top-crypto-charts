@@ -24,7 +24,7 @@ function validateParameters(count, coins, exchanges, type)
             return false;
     }
 
-   if("V" != type && "G" != type)
+    if (isNaN(type) || (count >= 0 && count <= 2))
        return false;
 
    return true;
@@ -81,7 +81,7 @@ app.get('/', function (req, res, next) {
     var count = parseInt(req.query.count);
     var coins = req.query.coins;
     var exchanges = req.query.exchanges;
-    var type = req.query.type;
+    var type = parseInt(req.query.type);
 
     if(!validateParameters(count, coins, exchanges, type)) {
         log.log(`Request at ip address ${req.ip} denied. Invalid Params-count:${count}, coins:${coins}, exchanges:${exchanges}, type:${type}.`);
