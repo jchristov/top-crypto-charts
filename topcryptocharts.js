@@ -35,9 +35,8 @@ function refreshMarkets()
 {
     x = 60;  // 60 Seconds
 
-    exchange.BinanceMarketsRequest();
-    exchange.BittrexMarketsRequest();
-
+    exchange.refreshMarkets();
+    
     setTimeout(refreshMarkets, x*1000);
 }
 refreshMarkets();
