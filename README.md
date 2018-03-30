@@ -2,7 +2,7 @@
 
 ## Updates
 
-### Version 1.0.3 (30/04/18)
+### Version 1.0.3 (30/03/18)
 * Added exchange links to coins in table
 
 ### Version 1.0.2 (29/03/18)
