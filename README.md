@@ -5,19 +5,19 @@
 ### Version 1.0.3 (30/04/18)
 * Added exchange links to coins in table
 
-### Version 1.0.2 (29/04/18)
+### Version 1.0.2 (29/03/18)
 * Fixed issue where Bittrex gain was not calculated properly
 
-### Version 1.0.1 (29/04/18)
+### Version 1.0.1 (29/03/18)
 * Now runs on domain - www.topcryptocharts.io
 
-### Version 1.0.0 (28/04/18)
+### Version 1.0.0 (28/03/18)
 * Bittrex exchange added
 * Can now mix coins and exchanges in one link
 * The list of coins can be viewed in a table
 * Fancy new styling!
 
-### Version 0.1.0 (25/04/18)
+### Version 0.1.0 (25/03/18)
 * Filter top volume and gainer coins from the Binance exchange from the past 24hrs
 * Chart links generated for www.multicoincharts.com
 * Watchlist file generated for www.tradingview.com
