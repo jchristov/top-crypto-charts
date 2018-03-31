@@ -1,4 +1,4 @@
-se marketsdb;
+use marketsdb;
 
 SELECT 
     T2.symbol,
@@ -21,10 +21,12 @@ FROM
         (
             SELECT 
                 MIN(start_time) 
-                FROM 
-                    market_candles 
-                GROUP BY 
-                    symbol
+            FROM 
+                market_candles 
+            WHERE
+                start_time > (UNIX_TIMESTAMP() - 900)
+            GROUP BY 
+                symbol
         )
 ) as T1
 Inner Join
@@ -38,7 +40,7 @@ SELECT
 FROM
     market_candles
   WHERE
-    start_time > (UNIX_TIMESTAMP() - 1600)
+    start_time > (UNIX_TIMESTAMP() - 900)
 GROUP BY
     symbol
 ) AS T2
