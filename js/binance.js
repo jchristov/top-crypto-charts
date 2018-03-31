@@ -3,6 +3,9 @@ const database = require('./database.js');
 const log = require('./log.js');
 const binanceAPI = require('node-binance-api');
 
+// Constants
+const FIVE_SECONDS_MIL = (60000 * 5);
+
 binanceAPI.options({
   APIKEY: '<key>',
   APISECRET: '<secret>',
@@ -10,32 +13,35 @@ binanceAPI.options({
 
 });
 
+var LATEST_BNBBTC_PRICE = 0.0;
+var LATEST_ETHBTC_PRICE = 0.0;
+var LATEST_USDTBTC_PRICE = 0.0;
+
+function convertToBtc(symbol, value) {
+
+    var last3 = symbol.substr(symbol.length - 3);
+
+    var btcVal = 0.0;
+    if ("BNB" == last3) {
+        btcVal = value * LATEST_BNBBTC_PRICE;
+    } else if("BTC" == last3){
+        btcVal = value;
+    } else if ("ETH" == last3) {
+        btcVal = value * LATEST_ETHBTC_PRICE;
+    } else if ("USDT" == symbol.substr(symbol.length - 4)) {
+        btcVal = value / LATEST_USDTBTC_PRICE;
+        if (!isFinite(btcVal)) {
+            btcVal = 0.0
+        }
+    }
+    return btcVal;
+}
+
 function processBinanceMarkets(json)
 {
 
-    // Get price of bases to help determine base price in btc for all markets
-    var BNBBTC = 0.0;
-    var ETHBTC = 0.0;
-    var USDTBTC = 0.0;
-
     for(var i = 0; i < json.length; i++) {
         var obj = json[i];
-
-        if(obj['symbol'] == 'BNBBTC') {
-            BNBBTC = obj['lastPrice'];
-        } else if(obj['symbol'] == 'ETHBTC') {
-            ETHBTC = obj['lastPrice'];
-        } else if(obj['symbol'] == 'BTCUSDT') {
-            USDTBTC = obj['lastPrice'];
-        }
-    }
-
-
-    for(var i = 0; i < json.length; i++) {
-        var obj = json[i];
-
-        //"highPrice": "100.00000000",
-        //"lowPrice": "0.10000000",
 
         var symbol = obj["symbol"];
         var market = "";
@@ -48,37 +54,22 @@ function processBinanceMarkets(json)
         var high = parseFloat(obj["highPrice"]);
         var volatility = (high-low)/low*100.0;
 
-        if("BTC" == symbol.substr(symbol.length - 3))
+        var last3 = symbol.substr(symbol.length - 3);
+        if("BTC" == last3 || "ETH" == last3 || "BNB" == last3)
         {
             market = symbol.substr(0, symbol.length - 3);
-            base = symbol.substr(symbol.length - 3);
-        } else if ("ETH" == symbol.substr(symbol.length - 3))
-        {
-            market = symbol.substr(0, symbol.length - 3);
-            base = symbol.substr(symbol.length - 3);
-        } else if ("BNB" == symbol.substr(symbol.length - 3))
-        {
-            market = symbol.substr(0, symbol.length - 3);
-            base = symbol.substr(symbol.length - 3);
+            base = last3;
         } else if ("USDT" == symbol.substr(symbol.length - 4))
         {
             market = symbol.substr(0, symbol.length - 4);
             base = symbol.substr(symbol.length - 4);
         }
 
-        if(base == "BNB") {
-            btcVolume = volume * BNBBTC;
-        } else if (base == "BTC") {
-            btcVolume = volume;
-        } else if (base == "ETH") {
-            btcVolume = volume * ETHBTC;
-        } else if (base == "USDT") {
-            btcVolume = volume / USDTBTC;
-        }
+        btcVolume = convertToBtc(symbol, volume);
 
         if(market != "" && base != "") // For some reason these are empty once on every binance api call. 
         {                               // Perhaps binance is returning an empty entry? Need to check.
-            database.insert(market, base, exchange, volume, btcVolume, gain, volatility);
+            database.marketsInsert(market, base, exchange, volume, btcVolume, gain, volatility);
         }
     }
 
@@ -116,16 +107,47 @@ exports.BinanceMarketsRequest = function()
 
 exports.StartBinanceMarketStream = function() {
 
-    binanceAPI.websockets.candlesticks(['BNBBTC'], "1m", (candlesticks) => {
-        let { e:eventType, E:eventTime, s:symbol, k:ticks } = candlesticks;
-        let { o:open, h:high, l:low, c:close, v:volume, n:trades, i:interval, x:isFinal, q:quoteVolume, V:buyVolume, Q:quoteBuyVolume } = ticks;
-        console.log(symbol+" "+interval+" candlestick update");
-        console.log("open: "+open);
-        console.log("high: "+high);
-        console.log("low: "+low);
-        console.log("close: "+close);
-        console.log("volume: "+volume);
-        console.log("isFinal: "+isFinal);
-      });
+    binanceAPI.websockets.candlesticks(['BNBBTC', 'ETHBTC', 'BTCUSDT'], "1m", (candlesticks) => {
+        let { s:symbol, k:ticks } = candlesticks;
+        let { c:close} = ticks;
 
+        if(symbol == 'BNBBTC') {
+            LATEST_BNBBTC_PRICE = close;
+        } else if(symbol == 'ETHBTC') {
+            LATEST_ETHBTC_PRICE = close;
+        } else if(symbol == 'BTCUSDT') {
+            LATEST_USDTBTC_PRICE = close;
+        }
+    });
+
+    binanceAPI.prevDay(false, (error, prevDay) => {
+        let markets = [];
+        for ( let obj of prevDay ) {
+            let symbol = obj.symbol;
+            markets.push(symbol);
+        }
+        binanceAPI.websockets.candlesticks(markets, '5m', (candlesticks) => {
+            
+            let { e:eventType, E:eventTime, s:symbol, k:ticks } = candlesticks;
+            let { o:open, h:high, l:low, c:close, q:volume, n:trades, i:interval, x:isFinal, q:quoteVolume, V:buyVolume, Q:quoteBuyVolume } = ticks;
+            
+            // Subtract five minutes if final. This is because the time for the final data of the candle increases.
+            // We want all data for the current candle to be associated with the opening time for the db to correctly
+            // store the data.
+            if(isFinal) {
+                eventTime -= FIVE_SECONDS_MIL; 
+            }
+    
+            // Time is in milliseconds. Round time down to highest 5 minutes.
+            var time = Math.floor(eventTime / FIVE_SECONDS_MIL) * FIVE_SECONDS_MIL;
+            time = Math.floor(time / 1e3);  // Now lower precision to minutes, not milliseconds
+    
+            var btcVolume = convertToBtc(symbol, volume);
+
+            symbol = "BINANCE:" + symbol;
+
+            database.marketCandlesInsert(time, symbol, parseFloat(open), parseFloat(high), parseFloat(low), parseFloat(close), parseFloat(volume), parseFloat(btcVolume));
+
+        });
+    });
 }

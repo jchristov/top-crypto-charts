@@ -43,7 +43,7 @@ function processBittrexMarkets(json)
             btcVolume = volume / USDTBTC;
         }
 
-        database.insert(market, base, exchange, volume, btcVolume, gain, volatility);
+        database.marketsInsert(market, base, exchange, volume, btcVolume, gain, volatility);
     }
 
     log.log(`Refreshed Bittrex Coins.`);
