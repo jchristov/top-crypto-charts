@@ -24,7 +24,7 @@ function validateParameters(count, coins, exchanges, type)
             return false;
     }
 
-    if (isNaN(type) || (count >= 0 && count <= 2))
+    if (isNaN(type) || !(type >= 0 && type <= 2))
        return false;
 
    return true;
