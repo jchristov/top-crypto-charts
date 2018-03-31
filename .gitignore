@@ -65,6 +65,3 @@ typings/
 
 # vscode
 .vscode
-
- # sql test queries
- sql_queries/
