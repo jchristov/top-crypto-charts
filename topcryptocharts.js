@@ -77,7 +77,7 @@ app.get('/', function (req, res, next) {
     if (!req.query.count || !req.query.coins || !req.query.exchanges || !req.query.type)
     {
         log.log(`Request at ip address ${req.ip} denied. Invalid Params-Params missing.`);
-        res.send(500);
+        res.status(400).send('Params missing');
         return;
     }
 
@@ -88,7 +88,7 @@ app.get('/', function (req, res, next) {
 
     if(!validateParameters(count, coins, exchanges, type)) {
         log.log(`Request at ip address ${req.ip} denied. Invalid Params-count:${count}, coins:${coins}, exchanges:${exchanges}, type:${type}.`);
-        res.send(500);
+        res.status(400).send('Params invalid');
         return;
     }
 
