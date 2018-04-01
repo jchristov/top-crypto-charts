@@ -1,9 +1,10 @@
 use marketsdb;
 
-INSERT INTO  market_chunks 
+INSERT INTO market_chunks 
     (
         candle,
-        symbol, 
+        symbol,
+        exchange,
         open, 
         high, 
         low, 
@@ -13,7 +14,8 @@ INSERT INTO  market_chunks
     )
 SELECT 
     '15m',
-    T4.symbol, 
+    T4.symbol,
+    T4.exchange,
     T4.open, 
     T4.high, 
     T4.low, 
@@ -24,6 +26,7 @@ FROM
 (
     SELECT
         T2.symbol,
+        T2.exchange,
         T1.open,
         T2.high,
         T2.low,
@@ -55,6 +58,7 @@ FROM
     (
     SELECT
         symbol,
+        exchange,
         MAX(high) AS 'high', 
         MIN(low) AS 'low', 
         SUM(volume) AS 'volume',
@@ -64,7 +68,7 @@ FROM
     WHERE
         start_time > (UNIX_TIMESTAMP() - (60*15))
     GROUP BY
-        symbol
+        symbol, exchange
     ) AS T2
     ON 
         T1.symbol = T2.symbol

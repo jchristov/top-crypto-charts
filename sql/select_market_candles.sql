@@ -2,6 +2,7 @@ use marketsdb;
 
 SELECT 
     T2.symbol,
+    T2.exchange,
     T1.open,
     T2.high,
     T2.low,
@@ -33,6 +34,7 @@ Inner Join
 (
 SELECT
     symbol,
+    exchange,
     MAX(high) AS 'high', 
     MIN(low) AS 'low', 
     SUM(volume) AS 'volume',
@@ -42,7 +44,7 @@ FROM
   WHERE
     start_time > (UNIX_TIMESTAMP() - (60*15))
 GROUP BY
-    symbol
+    symbol, exchange
 ) AS T2
 ON 
     T1.symbol = T2.symbol

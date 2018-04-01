@@ -1,7 +1,17 @@
 
 var path = require('path');
-var exchange = require('./js/exchanges.js');
+var exchanges = require('./js/exchanges.js');
 var log = require('./js/log.js');
+
+function validateParameters(exchange, time)
+{
+    if(exchange != 'binance')
+        return false;
+
+    if(time != '5m' && time != '15m' && time != '30m' && time != '1h' && time != '2h' && time != '4h' && time != '6h' && time != '12hr')
+        return false;
+    return true;
+}
 
 exports.html = function(req, res, next) {
 
@@ -18,18 +28,20 @@ exports.data = function(req, res, next) {
         return;
     }
     
-    var exchange = req.query.exchange;
+    var ex = req.query.exchange;
     var time = req.query.time;
     
-    if(!validateParameters(count, coins, exchanges, type)) {
-        log.log(`Request at ip address ${req.ip} denied. Invalid Params-count:${count}, coins:${coins}, exchanges:${exchanges}, type:${type}.`);
+    if(!validateParameters(ex, time)) {
+        log.log(`Request at ip address ${req.ip} denied. Invalid Params-exchange:${ex}, time:${time}.`);
         res.status(400).send('Params invalid');
         return;
     }
     
-    log.log(`Request at ip address ${req.ip} accepted. Params-count:${count}, coins:${coins}, exchanges:${exchanges}, type:${type}.`);
+    log.log(`Request at ip address ${req.ip} accepted. Params-exchange:${ex}, time:${time}.`);
     
-    exchange.getSymbols(count, [coins], [exchanges], type, function(result) {
+
+
+    exchanges.getMarketChunk(ex, time, function(result) {
         res.json(result);
     });
 }

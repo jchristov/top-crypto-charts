@@ -32,7 +32,7 @@ app.get('/home', home.html);
 app.get('/home/data', home.data);
 
 app.get('/live', live.html);
-app.get('/live/data', live.html);
+app.get('/live/data', live.data);
  
 var port = process.env.TOP_CRYPTO_CHARTS_PORT || 8080;
 var ip   = process.env.TOP_CRYPTO_CHARTS_IP  || '0.0.0.0';

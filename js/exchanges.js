@@ -38,7 +38,12 @@ exports.initExchanges = function() {
     binance.StartBinanceMarketStream();
 }
 
-exports.getSymbols = function(topCount, bases, exchanges, type, callback) {
+exports.getTopCoins = function(topCount, bases, exchanges, type, callback) {
     
-    database.marketsQuery(topCount, bases, exchanges, type, callback);
+    database.topCoinsQuery(topCount, bases, exchanges, type, callback);
+}
+
+exports.getMarketChunk = function(exchange, time, callback) {
+    
+    database.marketChunkQuery(exchange, time, callback);
 }

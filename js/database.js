@@ -37,6 +37,7 @@ const INV_1e8 = 1/1e8;
 
 // Enums
 const ENUM_CANDLE = "ENUM('1m', '3m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '12h', '1d', '1w', '4w')";
+const ENUM_EXCHANGE = "ENUM('binance', 'bittrex', 'cryptopia', 'hitbtc')";
 
 // DB rounding misc
 
@@ -89,7 +90,7 @@ exports.marketsInsert = function(market, base, exchange, volume, btcVolume, gain
 
 }
 
-exports.marketCandlesInsert = function(startTime, symbol, open, high, low, close, volume, btcVolume) {
+exports.marketCandlesInsert = function(startTime, symbol, exchange, open, high, low, close, volume, btcVolume) {
 
   // Making sure decimal precision is not longer than 6
   symbol = roundString(symbol, LENGTH_SYMBOL);
@@ -102,6 +103,7 @@ exports.marketCandlesInsert = function(startTime, symbol, open, high, low, close
 
   var entry = [[startTime,
                 symbol,
+                exchange,
                 open,
                 high,
                 low,
@@ -110,7 +112,7 @@ exports.marketCandlesInsert = function(startTime, symbol, open, high, low, close
                 btcVolume]];
 
   var sql = `INSERT INTO 
-              market_candles (start_time, symbol, open, high, low, close, volume, btc_volume) 
+              market_candles (start_time, symbol, exchange, open, high, low, close, volume, btc_volume) 
             VALUES 
               ? 
             ON DUPLICATE KEY UPDATE 
@@ -128,7 +130,7 @@ exports.marketCandlesInsert = function(startTime, symbol, open, high, low, close
 
 // DB Queries
 
-exports.marketsQuery = function(num, bases, exchanges, type, callback) {
+exports.topCoinsQuery = function(num, bases, exchanges, type, callback) {
 
   if (type === 0) type = 'btc_volume';
   else if (type === 1) type = 'gain';
@@ -148,6 +150,23 @@ exports.marketsQuery = function(num, bases, exchanges, type, callback) {
               `;
 
   con.query(sql, [bases, exchanges, num], function (err, result, fields) {
+    if (err) throw err;
+    callback(result);
+  });
+
+}
+
+exports.marketChunkQuery = function(exchange, time, callback) {
+
+  var sql = `SELECT 
+              symbol, open, high, low, close, volume, btc_volume
+            FROM 
+              market_chunks
+            WHERE
+              exchange = ? AND
+              candle = ?`;
+
+  con.query(sql, [[exchange], [time]], function (err, result, fields) {
     if (err) throw err;
     callback(result);
   });
@@ -180,7 +199,8 @@ exports.updateMarketChunk = function(candle, time) {
     INSERT INTO  market_chunks 
     (
         candle,
-        symbol, 
+        symbol,
+        exchange,
         open, 
         high, 
         low, 
@@ -191,6 +211,7 @@ exports.updateMarketChunk = function(candle, time) {
     SELECT 
         '${candle}',
         T4.symbol, 
+        T4.exchange,
         T4.open, 
         T4.high, 
         T4.low, 
@@ -201,6 +222,7 @@ exports.updateMarketChunk = function(candle, time) {
     (
         SELECT
             T2.symbol,
+            T2.exchange,
             T1.open,
             T2.high,
             T2.low,
@@ -232,6 +254,7 @@ exports.updateMarketChunk = function(candle, time) {
         (
         SELECT
             symbol,
+            exchange,
             MAX(high) AS 'high', 
             MIN(low) AS 'low', 
             SUM(volume) AS 'volume',
@@ -241,7 +264,7 @@ exports.updateMarketChunk = function(candle, time) {
         WHERE
             start_time > (UNIX_TIMESTAMP() - (60*${time}))
         GROUP BY
-            symbol
+            symbol, exchange
         ) AS T2
         ON 
             T1.symbol = T2.symbol
@@ -308,6 +331,7 @@ exports.init = function() {
     sql = `CREATE TABLE IF NOT EXISTS \`market_chunks\` (
             \`candle\`  ${ENUM_CANDLE} NOT NULL,
             \`symbol\` ${CHAR_SYMBOL} NOT NULL REFERENCES markets(\`symbol\`),
+            \`exchange\` ${ENUM_EXCHANGE} NOT NULL,
             \`open\` ${NUM_PRICE} NOT NULL,
             \`high\` ${NUM_PRICE} NOT NULL,
             \`low\` ${NUM_PRICE} NOT NULL,
@@ -326,6 +350,7 @@ exports.init = function() {
     sql = `CREATE TABLE IF NOT EXISTS \`market_candles\` (
             \`start_time\` ${INT_TIME} NOT NULL,
             \`symbol\` ${CHAR_SYMBOL} NOT NULL REFERENCES markets(\`symbol\`),
+            \`exchange\` ${ENUM_EXCHANGE} NOT NULL,
             \`open\` ${NUM_PRICE} NOT NULL,
             \`high\` ${NUM_PRICE} NOT NULL,
             \`low\` ${NUM_PRICE} NOT NULL,

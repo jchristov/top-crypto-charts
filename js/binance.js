@@ -150,7 +150,7 @@ exports.StartBinanceMarketStream = function() {
 
             symbol = "BINANCE:" + symbol;
 
-            database.marketCandlesInsert(time, symbol, parseFloat(open), parseFloat(high), parseFloat(low), parseFloat(close), parseFloat(volume), parseFloat(btcVolume));
+            database.marketCandlesInsert(time, symbol, 'binance', parseFloat(open), parseFloat(high), parseFloat(low), parseFloat(close), parseFloat(volume), parseFloat(btcVolume));
 
         });
     });

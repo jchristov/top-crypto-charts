@@ -24,10 +24,13 @@
                 $.getJSON(url, function( data ) {
 
                     console.log(data);
-                    //genTable(data);
-
                 })
             }
+
+            $(document).ready(function(){
+                $("#bSubmit").click(submitOnClick);
+            });
+
         </script>
         
         <style>
@@ -64,10 +67,11 @@
                                     <label for="countRow">Exchange</label>
                                 </div>
                             </div>
-                            <div class="row" id="typeRow">
+                            <div class="row" id="exchangesRow">
                                 <div class="col-sm-12">
-                                    <select class="form-control" id="sType">
-                                        <option value="0">Binance</option>
+                                    <select class="form-control" id="sExchange">
+                                        <option value="binance">Binance</option>
+                                        <option value="bittrex" disabled>Bittrex</option>
                                     </select>
                                 </div>
                             </div>
@@ -76,9 +80,9 @@
                                     <label for="countRow">Time Period</label>
                                 </div>
                             </div>
-                            <div class="row" id="typeRow">
+                            <div class="row" id="timeRow">
                                 <div class="col-sm-12">
-                                    <select class="form-control" id="sType">
+                                    <select class="form-control" id="sTime">
                                         <option value="5m">5 minutes</option>
                                         <option value="15m">15 minutes</option>
                                         <option value="30m">30 minutes</option>
