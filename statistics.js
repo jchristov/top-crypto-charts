@@ -15,8 +15,8 @@ function validateParameters(exchange, time)
 
 exports.html = function(req, res, next) {
 
-    res.sendFile(path.join(__dirname + '/public/page/live.html'));
-    log.log(`Live page: ip address: ${req.ip}`)
+    res.sendFile(path.join(__dirname + '/public/page/statistics.html'));
+    log.log(`Statistics page: ip address: ${req.ip}`)
 }
 
 exports.data = function(req, res, next) {

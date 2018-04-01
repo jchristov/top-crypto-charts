@@ -4,7 +4,7 @@ var path = require('path');
 var database = require('./js/database.js');
 var log = require('./js/log.js');
 var home = require('./home');
-var live = require('./live');
+var live = require('./statistics');
 
 // Initialise database
 database.init();
@@ -31,8 +31,8 @@ app.get('/', home.html);
 app.get('/home', home.html);
 app.get('/home/data', home.data);
 
-app.get('/live', live.html);
-app.get('/live/data', live.data);
+app.get('/statistcs', live.html);
+app.get('/statistcs/data', live.data);
  
 var port = process.env.TOP_CRYPTO_CHARTS_PORT || 8080;
 var ip   = process.env.TOP_CRYPTO_CHARTS_IP  || '0.0.0.0';
