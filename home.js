@@ -34,7 +34,7 @@ exports.html = function(req, res, next) {
 exports.data = function(req, res, next) {
 
     if (!req.query.count || !req.query.coins || !req.query.exchanges || !req.query.type) {
-        log.log(`Request at ip address ${req.ip} denied. Invalid Params-Params missing.`);
+        log.log(`Top charts request at ip address ${req.ip} denied. Invalid Params-Params missing.`);
         res.status(400).send('Params missing');
         return;
     }
@@ -45,12 +45,12 @@ exports.data = function(req, res, next) {
     var type = parseInt(req.query.type);
     
     if(!validateParameters(count, coins, exchanges, type)) {
-        log.log(`Request at ip address ${req.ip} denied. Invalid Params-count:${count}, coins:${coins}, exchanges:${exchanges}, type:${type}.`);
+        log.log(`Top charts request at ip address ${req.ip} denied. Invalid Params-count:${count}, coins:${coins}, exchanges:${exchanges}, type:${type}.`);
         res.status(400).send('Params invalid');
         return;
     }
     
-    log.log(`Request at ip address ${req.ip} accepted. Params-count:${count}, coins:${coins}, exchanges:${exchanges}, type:${type}.`);
+    log.log(`Top charts request at ip address ${req.ip} accepted. Params-count:${count}, coins:${coins}, exchanges:${exchanges}, type:${type}.`);
     
     exchange.getTopCoins(count, [coins], [exchanges], type, function(result) {
         res.json(result);
