@@ -33,7 +33,7 @@ function refreshMarketChunks()
 exports.initExchanges = function() {
 
     refreshMarkets();
-    refreshMarketChunks();
+    //refreshMarketChunks();
 
     binance.StartBinanceMarketStream();
 }
