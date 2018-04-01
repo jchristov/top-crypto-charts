@@ -98,3 +98,74 @@ function genTable(data) {
     txt += "</table>"        
     document.getElementById("table").innerHTML = txt;
 }
+
+function genStatsTable(data) {
+
+    var txt = "";
+    txt += "<table id=\"table-statistics\" class=\"table table-striped table-bordered table-responsive tablesorter showBNB showBTC showETH showUSDT\">";
+    txt += "<thead>";
+    txt += "<tr class=\"header\">";
+    txt += "<th>Coin</th>";
+    txt += "<th>Base</th>";
+    txt += "<th>Price (%)</th>";
+    txt += "<th>Volatility (%)</th>";
+    txt += "<th>Volume</th>";
+    txt += "<th>Volume (BTC)</th>";
+    txt += "</tr>";
+    txt += "</thead>";
+    txt += "<tbody>";
+    for (var i in data) {
+
+
+        var components = data[i].symbol.split(':');
+        var symbol = components[1];
+        var last3 = symbol.substr(symbol.length - 3);
+        var market = "";
+        var base = "";
+        if("BTC" == last3 || "ETH" == last3 || "BNB" == last3)
+        {
+            market = symbol.substr(0, symbol.length - 3);
+            base = last3;
+        } else if ("USDT" == symbol.substr(symbol.length - 4))
+        {
+            market = symbol.substr(0, symbol.length - 4);
+            base = symbol.substr(symbol.length - 4);
+        }
+
+        var gain = (data[i].close - data[i].open) / data[i].open * 100.0;
+        var volatility = (data[i].high - data[i].low) / data[i].low * 100.0;
+
+
+        txt += "<tr class=\"" + base + "\">";
+
+        // Coin Column
+        txt += "<td>" + market + "</td>";
+
+        // Base Column
+        txt += "<td>" + base + "</td>";
+
+        // Price diff Column
+        txt += "<td";
+        if(gain < 0.0) 
+            txt += " class=\"text-danger\">" + gain.toFixed(2);
+        else if(gain > 0.0) 
+            txt += " class=\"text-success\">+" + gain.toFixed(2);
+        else 
+            txt += ">" + gain.toFixed(2);
+        txt += "%</td>";
+
+        // Volatility Column
+        txt += "<td>" + volatility.toFixed(2) + "%</td>";
+
+        // Volume Column
+        txt += "<td>" + data[i].volume + "</td>";
+
+        // Volume BTC Column
+        txt += "<td>" + data[i].btc_volume + "</td>";
+
+        txt += "</tr>";
+    }
+    txt += "</tbody>"  
+    txt += "</table>"        
+    document.getElementById("table").innerHTML = txt;
+}

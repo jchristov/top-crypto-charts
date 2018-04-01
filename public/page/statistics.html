@@ -5,16 +5,21 @@
 
         <meta charset="utf-8"> 
         <meta name="viewport" content="width=device-width, initial-scale=1">
-
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="js/third/jquery.tablesorter.js"></script>
+
+        <script src="js/tables.js"></script>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet" href="style/theme.bootstrap_3.css" media="print, projection, screen">
 
         <script>
 
             function submitOnClick() {
 
-                var url = "/live/data?";
+                var url = "/statistics/data?";
 
                 var exchangeParam = "&exchange=".concat($("#sExchange").val());
                 var timeParam = "&time=".concat($("#sTime").val());
@@ -24,15 +29,49 @@
                 $.getJSON(url, function( data ) {
 
                     console.log(data);
-                    //genTable(data);
-
+                    genStatsTable(data);
+                    onTableChange();
+                    $("#table-statistics").tablesorter();
                 })
             }
+
+            function onTableChange() {
+
+                //tableRows
+
+                var checkBoxes = ["ibnb", "ibtc", "ieth", "iusdt"];
+                var tableRows = ["showBNB", "showBTC", "showETH", "showUSDT"];
+                
+                var i;
+                for (i = 0; i < checkBoxes.length; i++) {
+
+                    var elements = document.getElementsByClassName(tableRows[i]);
+
+                    if(document.getElementById(checkBoxes[i]).checked) {
+                        console.log(checkBoxes[i] + " checked");
+                        $( "#table-statistics" ).addClass(tableRows[i]);
+                    } else {
+                        console.log(checkBoxes[i] + " not checked");
+                        $( "#table-statistics" ).removeClass(tableRows[i]);
+                    }
+                }
+            }
+
+            $(document).ready(function(){
+                $("#bSubmit").click(submitOnClick);
+            });
+
         </script>
         
         <style>
             .top-buffer { margin-top:5px; }
             .break-word { overflow-wrap: break-word; }
+            table tr { display:none; }
+            table tr.header { display:table-row; }
+            table.showBNB tr.BNB { display:table-row; }
+            table.showBTC tr.BTC { display:table-row; }
+            table.showETH tr.ETH { display:table-row; }
+            table.showUSDT tr.USDT { display:table-row; }
         </style>
     </head>
     <body>
@@ -43,7 +82,7 @@
                 </div>
                 <ul class="nav navbar-nav">
                     <li><a href="/">Top Charts</a></li>
-                    <li class="active"><a href="#">Live</a></li>
+                    <li class="active"><a href="#">Statistics (Beta)</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="" data-toggle="modal" data-target="#logModal">Log</a></li>
@@ -64,10 +103,11 @@
                                     <label for="countRow">Exchange</label>
                                 </div>
                             </div>
-                            <div class="row" id="typeRow">
+                            <div class="row" id="exchangesRow">
                                 <div class="col-sm-12">
-                                    <select class="form-control" id="sType">
-                                        <option value="0">Binance</option>
+                                    <select class="form-control" id="sExchange">
+                                        <option value="binance">Binance</option>
+                                        <option value="bittrex" disabled>Bittrex</option>
                                     </select>
                                 </div>
                             </div>
@@ -76,9 +116,9 @@
                                     <label for="countRow">Time Period</label>
                                 </div>
                             </div>
-                            <div class="row" id="typeRow">
+                            <div class="row" id="timeRow">
                                 <div class="col-sm-12">
-                                    <select class="form-control" id="sType">
+                                    <select class="form-control" id="sTime">
                                         <option value="5m">5 minutes</option>
                                         <option value="15m">15 minutes</option>
                                         <option value="30m">30 minutes</option>
@@ -86,10 +126,22 @@
                                         <option value="2h">2 hours</option>
                                         <option value="4h">4 hours</option>
                                         <option value="6h" selected="selected">6 hours</option>
-                                        <option value="12h">12 hours</option>
                                     </select>
                                 </div>
                             </div>
+                            <div class="row top-buffer">
+                                    <div class="col-sm-12">
+                                        <label for="coinsRow">Base Coin</label>
+                                    </div>
+                                </div>
+                                <div class="row" id="coinsRow">
+                                    <div class="col-sm-12">
+                                        <label class="checkbox-inline"><input id="ibnb" type="checkbox" name="BNB" value="0" onclick="onTableChange();" checked>BNB</label>
+                                        <label class="checkbox-inline"><input id="ibtc" type="checkbox" name="BTC" value="1" onclick="onTableChange();" checked>BTC</label>
+                                        <label class="checkbox-inline"><input id="ieth" type="checkbox" name="ETH" value="0" onclick="onTableChange();" checked>ETH</label>
+                                        <label class="checkbox-inline"><input id="iusdt" type="checkbox" name="USDT" value="0" onclick="onTableChange();" checked>USDT</label>
+                                    </div>
+                                </div>
                             <div class="row top-buffer">
                                 <div class="col-sm-12">
                                     <button id="bSubmit" type="button" class="btn btn-primary">Apply</button>
@@ -115,6 +167,11 @@
                         </div>
                         <div class="modal-body">
 
+                            <h5 class="modal-title">Version 1.2.0 (01/04/18)</h4>
+                            <ul>
+                                <li>Added new statistics page that shows summaries over differnt time periods (beta)</li>
+                            </ul>
+                                    
                             <h5 class="modal-title">Version 1.1.0 (30/03/18)</h4>
                             <ul>
                                 <li>Added volatility filtering</li>
@@ -174,40 +231,55 @@
 
             <!-- Modal -->
             <div class="modal fade" id="helpModal" role="dialog">
-                <div class="modal-dialog">
-                
-                    <!-- Modal content-->
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            <h4 class="modal-title">Help</h4>
-                        </div>
-                        <div class="modal-body">
-
-                            <p>Thanks for using Top Crypto Charts!</p>
-                            <br/>
-                            <p>Find the project on <a href="https://github.com/cuppacoffee93/charts-generator">GitHub</a> for the following:</p>
-                            <ul class="list-group">
-                                <li class="list-group-item">Report Bugs</li>
-                                <li class="list-group-item">New Features</li>
-                                <li class="list-group-item">Code Contributions</li>
-                            </ul>
-                            <br/>
-                            <p>For anything else, email me at cuppacoffee93@gmail.com.</p>
-                            <br/>
-                            <p>Thanks to the developers at <a href="https://multicoincharts.com">www.multicoincharts.com</a> for the amazing multi chart tool. You can show your support to their project by donating over on their site.</p>
-                            <br/>
-                            <p>If you find this project useful and would like to support it, donations are always welcome :)</p>
-                            <p>BTC: 1z8biMfFw15ctKpvD5suc9Sa3RWVyQdfc</p>
-                            <p>ETH: 0xf776aE12d36Cffc81D66e662CC2f910FDf2E189b</p>
-                            <p>LTC: MVrtR3UpL5SdutM3AN9kFiQT7MvGggXuJT</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <div class="modal-dialog">
+                    
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Help</h4>
+                            </div>
+                            <div class="modal-body">
+    
+                                <p>Thanks for using Top Crypto Charts!</p>
+                                <br/>
+                                <p>Find the project on <a href="https://github.com/cuppacoffee93/charts-generator">GitHub</a> for the following:</p>
+                                <ul class="list-group">
+                                    <li class="list-group-item">Report Bugs</li>
+                                    <li class="list-group-item">New Features</li>
+                                    <li class="list-group-item">Code Contributions</li>
+                                </ul>
+                                <br/>
+                                <p>For anything else, email me at cuppacoffee93@gmail.com.</p>
+                                <br/>
+                            </div>
+                            <div class="modal-header">
+                                    <h4 class="modal-title">Donations</h4>
+                            </div>
+                            <div class="modal-body">
+                                <p>If you find this project useful and would like to support it, donations are always welcome :)</p>
+                                <br/>
+                                <div class="panel panel-warning">
+                                    <div class="panel-heading">BTC</div>
+                                    <div class="panel-body">1z8biMfFw15ctKpvD5suc9Sa3RWVyQdfc</div>
+                                </div>
+                                <div class="panel panel-info">
+                                    <div class="panel-heading">ETH</div>
+                                    <div class="panel-body">0xf776aE12d36Cffc81D66e662CC2f910FDf2E189b</div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">LTC</div>
+                                    <div class="panel-body">MVrtR3UpL5SdutM3AN9kFiQT7MvGggXuJT</div>
+                                </div>
+                                <br/>
+                                <p>Thanks to the developers at <a href="https://multicoincharts.com">www.multicoincharts.com</a> for the amazing multi chart tool. You can show your support to their project by donating over on their site.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
             <!-- Modal -->
             <div class="modal fade" id="chartModal" role="dialog">

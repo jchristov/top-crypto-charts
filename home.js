@@ -52,7 +52,7 @@ exports.data = function(req, res, next) {
     
     log.log(`Request at ip address ${req.ip} accepted. Params-count:${count}, coins:${coins}, exchanges:${exchanges}, type:${type}.`);
     
-    exchange.getSymbols(count, [coins], [exchanges], type, function(result) {
+    exchange.getTopCoins(count, [coins], [exchanges], type, function(result) {
         res.json(result);
     });
 }

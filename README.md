@@ -2,6 +2,9 @@
 
 ## Updates
 
+### Version 1.2.0 (01/04/18)
+* Added new statistics page that shows summaries over differnt time periods (beta)
+
 ### Version 1.1.0 (30/03/18)
 * Added volatility filtering
 
