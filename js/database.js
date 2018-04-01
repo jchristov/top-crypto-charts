@@ -35,7 +35,7 @@ const INV_1e6 = 1/1e6;
 const INV_1e8 = 1/1e8;
 
 // Enums
-const ENUM_INTERVAL = "ENUM('1m', '3m', '5m', '15m', '30m', '1h', '4h', '6h', '12h', '1d', '1w', '4w')";
+const ENUM_CANDLE = "ENUM('1m', '3m', '5m', '15m', '30m', '1h', '4h', '6h', '12h', '1d', '1w', '4w')";
 
 // DB rounding misc
 
@@ -161,7 +161,7 @@ function test() {
  (SELECT id FROM teacher WHERE t_name='david'));
 
   var sql = `INSERT INTO 
-              market_chunks (interval, symbol, open, high, low, close, volume, btc_volume) 
+              market_chunks (candle, symbol, open, high, low, close, volume, btc_volume) 
             VALUES (
               \`30m\`
               (SELECT symbol FROM markets WHERE s_name='sam'),
@@ -212,7 +212,7 @@ exports.init = function() {
 
     // Create market chunks db
     sql = `CREATE TABLE IF NOT EXISTS \`market_chunks\` (
-            \`interval\`  ${ENUM_INTERVAL} NOT NULL,
+            \`candle\`  ${ENUM_CANDLE} NOT NULL,
             \`symbol\` ${CHAR_SYMBOL} NOT NULL REFERENCES markets(\`symbol\`),
             \`open\` ${NUM_PRICE} NOT NULL,
             \`high\` ${NUM_PRICE} NOT NULL,
@@ -220,7 +220,7 @@ exports.init = function() {
             \`close\` ${NUM_PRICE} NOT NULL,
             \`volume\` ${NUM_VOLUME} NOT NULL,
             \`btc_volume\` ${NUM_VOLUME} NOT NULL,
-            PRIMARY KEY(\`interval\`, \`symbol\`)
+            PRIMARY KEY(\`candle\`, \`symbol\`)
           );`;
 
     con.query(sql, function (err, result) {

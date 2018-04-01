@@ -24,11 +24,11 @@ FROM
             FROM 
                 market_candles 
             WHERE
-                start_time > (UNIX_TIMESTAMP() - 900)
+                start_time > (UNIX_TIMESTAMP() - (60*15))
             GROUP BY 
                 symbol
         )
-) as T1
+) AS T1
 Inner Join
 (
 SELECT
@@ -40,7 +40,7 @@ SELECT
 FROM
     market_candles
   WHERE
-    start_time > (UNIX_TIMESTAMP() - 900)
+    start_time > (UNIX_TIMESTAMP() - (60*15))
 GROUP BY
     symbol
 ) AS T2
@@ -62,6 +62,6 @@ INNER JOIN (
             GROUP BY 
                 symbol
         )
-) as T3
+) AS T3
 ON 
     T2.symbol = T3.symbol
