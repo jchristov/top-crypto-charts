@@ -107,7 +107,7 @@ exports.marketCandlesInsert = function(startTime, symbol, open, high, low, close
                 low,
                 close,
                 volume,
-                btcVolume,]];
+                btcVolume]];
 
   var sql = `INSERT INTO 
               market_candles (start_time, symbol, open, high, low, close, volume, btc_volume) 
@@ -153,6 +153,25 @@ exports.marketsQuery = function(num, bases, exchanges, type, callback) {
   });
 
 }
+
+/*exports.marketsCandlesMAQuery = function(symbol, callback) {
+
+  var sql = `SELECT 
+              AVG(btc_volume) as average_volume
+            FROM 
+              market_candles
+            WHERE
+              symbol = '${symbol}' AND
+              start_time > (UNIX_TIMESTAMP() - (60*20))`;
+
+  con.query(sql, function (err, result, fields) {
+    if (err) throw err;
+
+    callback(result);
+    console.log(result[0].average_volume);
+  });
+
+}*/
 
 // DB Maintenence
 exports.updateMarketChunk = function(candle, time) {

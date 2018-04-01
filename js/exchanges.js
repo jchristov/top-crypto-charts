@@ -19,6 +19,7 @@ function refreshMarketChunks()
 
     console.log("Refreshing Market Chunks");
 
+    database.updateMarketChunk('5m', 5);
     database.updateMarketChunk('15m', 15);
     database.updateMarketChunk('30m', 30);
     database.updateMarketChunk('1h', 60);
