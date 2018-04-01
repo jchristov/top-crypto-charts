@@ -8,7 +8,7 @@ function validateParameters(exchange, time)
     if(exchange != 'binance')
         return false;
 
-    if(time != '5m' && time != '15m' && time != '30m' && time != '1h' && time != '2h' && time != '4h' && time != '6h' && time != '12hr')
+    if(time != '5m' && time != '15m' && time != '30m' && time != '1h' && time != '2h' && time != '4h' && time != '6h' && time != '12h' && time != '1d')
         return false;
     return true;
 }
