@@ -124,6 +124,7 @@ exports.StartBinanceMarketStream = function() {
         let markets = [];
         for ( let obj of prevDay ) {
             let symbol = obj.symbol;
+
             markets.push(symbol);
         }
         binanceAPI.websockets.candlesticks(markets, '5m', (candlesticks) => {
@@ -131,6 +132,9 @@ exports.StartBinanceMarketStream = function() {
             let { e:eventType, E:eventTime, s:symbol, k:ticks } = candlesticks;
             let { o:open, h:high, l:low, c:close, q:volume, n:trades, i:interval, x:isFinal, q:quoteVolume, V:buyVolume, Q:quoteBuyVolume } = ticks;
             
+            if(symbol == '123456')
+                return;
+
             // Subtract five minutes if final. This is because the time for the final data of the candle increases.
             // We want all data for the current candle to be associated with the opening time for the db to correctly
             // store the data.

@@ -30,20 +30,6 @@ function validateParameters(count, coins, exchanges, type)
    return true;
 }
 
-// Set up automatic markets refresh
-function refreshMarkets()
-{
-    x = 300;  // 5 Mins
-
-    exchange.refreshMarkets();
-    
-    setTimeout(refreshMarkets, x*1000);
-}
-refreshMarkets();
-
-exchange.binWebSocketTest();
-
-
 // REST API
 
 app.enable('trust proxy');

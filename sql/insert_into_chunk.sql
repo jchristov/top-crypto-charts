@@ -88,3 +88,10 @@ FROM
     ON 
         T2.symbol = T3.symbol
 ) AS T4
+ON DUPLICATE KEY UPDATE 
+    open = T4.open,
+    high = T4.high,
+    low = T4.low,
+    close = T4.close,
+    volume = T4.volume,
+    btc_volume = T4.btc_volume;

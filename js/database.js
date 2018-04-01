@@ -1,4 +1,5 @@
 var mysql = require('mysql');
+const exchange = require('./exchanges.js');
 
 var con = mysql.createConnection({
   host: process.env.MYSQL_SERVICE_HOST,
@@ -35,7 +36,7 @@ const INV_1e6 = 1/1e6;
 const INV_1e8 = 1/1e8;
 
 // Enums
-const ENUM_CANDLE = "ENUM('1m', '3m', '5m', '15m', '30m', '1h', '4h', '6h', '12h', '1d', '1w', '4w')";
+const ENUM_CANDLE = "ENUM('1m', '3m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '12h', '1d', '1w', '4w')";
 
 // DB rounding misc
 
@@ -154,34 +155,108 @@ exports.marketsQuery = function(num, bases, exchanges, type, callback) {
 }
 
 // DB Maintenence
-function test() {
+exports.updateMarketChunk = function(candle, time) {
 
-  /*INSERT INTO classroom(teacher_id,student_id)
- VALUES ((SELECT id FROM students WHERE s_name='sam'),
- (SELECT id FROM teacher WHERE t_name='david'));
+  var sql = `
+    INSERT INTO  market_chunks 
+    (
+        candle,
+        symbol, 
+        open, 
+        high, 
+        low, 
+        close, 
+        volume, 
+        btc_volume
+    )
+    SELECT 
+        '${candle}',
+        T4.symbol, 
+        T4.open, 
+        T4.high, 
+        T4.low, 
+        T4.close, 
+        T4.volume, 
+        T4.btc_volume
+    FROM
+    (
+        SELECT
+            T2.symbol,
+            T1.open,
+            T2.high,
+            T2.low,
+            T3.close,
+            T2.volume,
+            T2.btc_volume
+        FROM 
+        (
+            SELECT 
+                symbol,
+                open 
+            FROM 
+                market_candles 
+                T1 
+            WHERE 
+                start_time IN 
+                (
+                    SELECT 
+                        MIN(start_time) 
+                    FROM 
+                        market_candles 
+                    WHERE
+                        start_time > (UNIX_TIMESTAMP() - (60*${time}))
+                    GROUP BY 
+                        symbol
+                )
+        ) AS T1
+        Inner Join
+        (
+        SELECT
+            symbol,
+            MAX(high) AS 'high', 
+            MIN(low) AS 'low', 
+            SUM(volume) AS 'volume',
+            SUM(btc_volume) AS 'btc_volume'
+        FROM
+            market_candles
+        WHERE
+            start_time > (UNIX_TIMESTAMP() - (60*${time}))
+        GROUP BY
+            symbol
+        ) AS T2
+        ON 
+            T1.symbol = T2.symbol
+        INNER JOIN (
+            SELECT symbol,
+                Close 
+            FROM 
+                market_candles 
+                T1 
+            WHERE 
+                start_time IN 
+                (
+                    SELECT 
+                        MAX(start_time) 
+                    FROM 
+                        market_candles 
+                    GROUP BY 
+                        symbol
+                )
+        ) AS T3
+        ON 
+            T2.symbol = T3.symbol
+    ) AS T4
+    ON DUPLICATE KEY UPDATE 
+        open = T4.open,
+        high = T4.high,
+        low = T4.low,
+        close = T4.close,
+        volume = T4.volume,
+        btc_volume = T4.btc_volume;`;
 
-  var sql = `INSERT INTO 
-              market_chunks (candle, symbol, open, high, low, close, volume, btc_volume) 
-            VALUES (
-              \`30m\`
-              (SELECT symbol FROM markets WHERE s_name='sam'),
-              (SELECT id FROM teacher WHERE t_name='david')
-            )
-              
-            
-            
-            
-            
-              ON DUPLICATE KEY UPDATE 
-              high = VALUES(high),
-              low = VALUES(low),
-              close = VALUES(close),
-              volume = VALUES(volume),
-              btc_volume = VALUES(btc_volume);`;
-              
-  con.query(sql, [entry], function (err, result) {
+  con.query(sql, function (err, result) {
     if (err) throw err;
-  });*/
+  });
 
 }
 
@@ -242,8 +317,11 @@ exports.init = function() {
           );`;
 
     con.query(sql, function (err, result) {
-    if (err) throw err;
+      if (err) throw err;
       console.log("Table created: market_candles");
+
+      // Initialise Exchanges
+      exchange.initExchanges();
     });
 
   });

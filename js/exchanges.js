@@ -2,18 +2,46 @@ const binance = require('./binance.js');
 const bittrex = require('./bittrex.js');
 const database = require('./database.js');
 
-exports.getSymbols = function(topCount, bases, exchanges, type, callback) {
-    
-    database.marketsQuery(topCount, bases, exchanges, type, callback);
-}
-
-exports.refreshMarkets = function() {
+// Set up automatic markets refresh
+function refreshMarkets()
+{
+    x = 300;  // 5 Mins
 
     binance.BinanceMarketsRequest();
     bittrex.BittrexMarketsRequest();
+    
+    setTimeout(refreshMarkets, x*1000);
 }
 
-exports.binWebSocketTest = function() {
+function refreshMarketChunks()
+{
+    x = 10;  // 10 Seconds
+
+    console.log("Refreshing Market Chunks");
+
+    database.updateMarketChunk('15m', 15);
+    database.updateMarketChunk('30m', 30);
+    database.updateMarketChunk('1h', 60);
+    database.updateMarketChunk('2h', 120);
+    database.updateMarketChunk('4h', 240);
+    //database.updateMarketChunk('6h', 360);
+    //database.updateMarketChunk('12h', 720);
+    //database.updateMarketChunk('1d', 1440);
+
+    console.log("Refreshed Market Chunks");
+    
+    setTimeout(refreshMarketChunks, x*1000);
+}
+
+exports.initExchanges = function() {
+
+    refreshMarkets();
+    refreshMarketChunks();
 
     binance.StartBinanceMarketStream();
+}
+
+exports.getSymbols = function(topCount, bases, exchanges, type, callback) {
+    
+    database.marketsQuery(topCount, bases, exchanges, type, callback);
 }
