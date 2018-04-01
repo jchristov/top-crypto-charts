@@ -28,7 +28,6 @@
 
                 $.getJSON(url, function( data ) {
 
-                    console.log(data);
                     genStatsTable(data);
                     onTableChange();
                     $("#table-statistics").tablesorter();
@@ -36,8 +35,6 @@
             }
 
             function onTableChange() {
-
-                //tableRows
 
                 var checkBoxes = ["ibnb", "ibtc", "ieth", "iusdt"];
                 var tableRows = ["showBNB", "showBTC", "showETH", "showUSDT"];
@@ -48,10 +45,8 @@
                     var elements = document.getElementsByClassName(tableRows[i]);
 
                     if(document.getElementById(checkBoxes[i]).checked) {
-                        console.log(checkBoxes[i] + " checked");
                         $( "#table-statistics" ).addClass(tableRows[i]);
                     } else {
-                        console.log(checkBoxes[i] + " not checked");
                         $( "#table-statistics" ).removeClass(tableRows[i]);
                     }
                 }
@@ -122,10 +117,12 @@
                                         <option value="5m">5 minutes</option>
                                         <option value="15m">15 minutes</option>
                                         <option value="30m">30 minutes</option>
-                                        <option value="1h">1 hours</option>
+                                        <option value="1h">1 hour</option>
                                         <option value="2h">2 hours</option>
                                         <option value="4h">4 hours</option>
                                         <option value="6h" selected="selected">6 hours</option>
+                                        <option value="12h">12 hours</option>
+                                        <option value="1d">1 day</option>
                                     </select>
                                 </div>
                             </div>
