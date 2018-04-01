@@ -102,10 +102,11 @@ function genTable(data) {
 function genStatsTable(data) {
 
     var txt = "";
-    txt += "<table id=\"table-statistics\" class=\"table table-striped table-bordered table-responsive tablesorter\">";
+    txt += "<table id=\"table-statistics\" class=\"table table-striped table-bordered table-responsive tablesorter showBNB showBTC showETH showUSDT\">";
     txt += "<thead>";
-    txt += "<tr>";
-    txt += "<th>Symbol</th>";
+    txt += "<tr class=\"header\">";
+    txt += "<th>Coin</th>";
+    txt += "<th>Base</th>";
     txt += "<th>Price (%)</th>";
     txt += "<th>Volatility (%)</th>";
     txt += "<th>Volume</th>";
@@ -115,14 +116,33 @@ function genStatsTable(data) {
     txt += "<tbody>";
     for (var i in data) {
 
+
+        var components = data[i].symbol.split(':');
+        var symbol = components[1];
+        var last3 = symbol.substr(symbol.length - 3);
+        var market = "";
+        var base = "";
+        if("BTC" == last3 || "ETH" == last3 || "BNB" == last3)
+        {
+            market = symbol.substr(0, symbol.length - 3);
+            base = last3;
+        } else if ("USDT" == symbol.substr(symbol.length - 4))
+        {
+            market = symbol.substr(0, symbol.length - 4);
+            base = symbol.substr(symbol.length - 4);
+        }
+
         var gain = (data[i].close - data[i].open) / data[i].open * 100.0;
         var volatility = (data[i].high - data[i].low) / data[i].low * 100.0;
 
 
-        txt += "<tr>";
+        txt += "<tr class=\"" + base + "\">";
 
-        // Symbol Column
-        txt += "<td>" + data[i].symbol + "</td>";
+        // Coin Column
+        txt += "<td>" + market + "</td>";
+
+        // Base Column
+        txt += "<td>" + base + "</td>";
 
         // Price diff Column
         txt += "<td";

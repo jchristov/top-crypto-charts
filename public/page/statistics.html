@@ -30,9 +30,31 @@
 
                     console.log(data);
                     genStatsTable(data);
-
+                    onTableChange();
                     $("#table-statistics").tablesorter();
                 })
+            }
+
+            function onTableChange() {
+
+                //tableRows
+
+                var checkBoxes = ["ibnb", "ibtc", "ieth", "iusdt"];
+                var tableRows = ["showBNB", "showBTC", "showETH", "showUSDT"];
+                
+                var i;
+                for (i = 0; i < checkBoxes.length; i++) {
+
+                    var elements = document.getElementsByClassName(tableRows[i]);
+
+                    if(document.getElementById(checkBoxes[i]).checked) {
+                        console.log(checkBoxes[i] + " checked");
+                        $( "#table-statistics" ).addClass(tableRows[i]);
+                    } else {
+                        console.log(checkBoxes[i] + " not checked");
+                        $( "#table-statistics" ).removeClass(tableRows[i]);
+                    }
+                }
             }
 
             $(document).ready(function(){
@@ -44,6 +66,12 @@
         <style>
             .top-buffer { margin-top:5px; }
             .break-word { overflow-wrap: break-word; }
+            table tr { display:none; }
+            table tr.header { display:table-row; }
+            table.showBNB tr.BNB { display:table-row; }
+            table.showBTC tr.BTC { display:table-row; }
+            table.showETH tr.ETH { display:table-row; }
+            table.showUSDT tr.USDT { display:table-row; }
         </style>
     </head>
     <body>
@@ -101,6 +129,19 @@
                                     </select>
                                 </div>
                             </div>
+                            <div class="row top-buffer">
+                                    <div class="col-sm-12">
+                                        <label for="coinsRow">Base Coin</label>
+                                    </div>
+                                </div>
+                                <div class="row" id="coinsRow">
+                                    <div class="col-sm-12">
+                                        <label class="checkbox-inline"><input id="ibnb" type="checkbox" name="BNB" value="0" onclick="onTableChange();" checked>BNB</label>
+                                        <label class="checkbox-inline"><input id="ibtc" type="checkbox" name="BTC" value="1" onclick="onTableChange();" checked>BTC</label>
+                                        <label class="checkbox-inline"><input id="ieth" type="checkbox" name="ETH" value="0" onclick="onTableChange();" checked>ETH</label>
+                                        <label class="checkbox-inline"><input id="iusdt" type="checkbox" name="USDT" value="0" onclick="onTableChange();" checked>USDT</label>
+                                    </div>
+                                </div>
                             <div class="row top-buffer">
                                 <div class="col-sm-12">
                                     <button id="bSubmit" type="button" class="btn btn-primary">Apply</button>
