@@ -98,3 +98,56 @@ function genTable(data) {
     txt += "</table>"        
     document.getElementById("table").innerHTML = txt;
 }
+
+function genStatsTable(data) {
+
+    var txt = "";
+    txt += "<table id=\"table-statistics\" class=\"table table-striped table-bordered table-responsive tablesorter\">";
+    txt += "<thead>";
+    txt += "<tr>";
+    txt += "<th>Symbol</th>";
+    txt += "<th>Price (%)</th>";
+    txt += "<th>Volatility (%)</th>";
+    txt += "<th>Volume</th>";
+    txt += "<th>Volume (BTC)</th>";
+    txt += "</tr>";
+    txt += "</thead>";
+    txt += "<tbody>";
+    for (var i in data) {
+
+        var gain = (data[i].close - data[i].open) / data[i].open * 100.0;
+        var volatility = (data[i].high - data[i].low) / data[i].low * 100.0;
+
+
+        txt += "<tr>";
+
+        // Symbol Column
+        txt += "<td>" + data[i].symbol + "</td>";
+
+        // Price diff Column
+        txt += "<td";
+        if(gain < 0.0) 
+            txt += " class=\"text-danger\">" + gain.toFixed(2);
+        else if(gain > 0.0) 
+            txt += " class=\"text-success\">+" + gain.toFixed(2);
+        else 
+            txt += ">" + gain.toFixed(2);
+        txt += "%</td>";
+
+        //txt += "<td>" + gain.toFixed(2); + "%</td>";
+
+        // Volatility Column
+        txt += "<td>" + volatility.toFixed(2) + "%</td>";
+
+        // Volume Column
+        txt += "<td>" + data[i].volume + "</td>";
+
+        // Volume BTC Column
+        txt += "<td>" + data[i].btc_volume + "</td>";
+
+        txt += "</tr>";
+    }
+    txt += "</tbody>"  
+    txt += "</table>"        
+    document.getElementById("table").innerHTML = txt;
+}

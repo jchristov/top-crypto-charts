@@ -7,8 +7,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet" href="style/theme.bootstrap_3.css">
+        
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="js/jquery.tablesorter.js"></script>
+
+        <script src="js/tables.js"></script>
 
         <script>
 
@@ -24,6 +29,9 @@
                 $.getJSON(url, function( data ) {
 
                     console.log(data);
+                    genStatsTable(data);
+
+                    $("#table-statistics").tablesorter();
                 })
             }
 
@@ -46,7 +54,7 @@
                 </div>
                 <ul class="nav navbar-nav">
                     <li><a href="/">Top Charts</a></li>
-                    <li class="active"><a href="#">Statistics</a></li>
+                    <li class="active"><a href="#">Statistics (Beta)</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="" data-toggle="modal" data-target="#logModal">Log</a></li>
@@ -90,7 +98,6 @@
                                         <option value="2h">2 hours</option>
                                         <option value="4h">4 hours</option>
                                         <option value="6h" selected="selected">6 hours</option>
-                                        <option value="12h">12 hours</option>
                                     </select>
                                 </div>
                             </div>
