@@ -154,8 +154,6 @@ function genStatsTable(data) {
             txt += ">" + gain.toFixed(2);
         txt += "%</td>";
 
-        //txt += "<td>" + gain.toFixed(2); + "%</td>";
-
         // Volatility Column
         txt += "<td>" + volatility.toFixed(2) + "%</td>";
 
