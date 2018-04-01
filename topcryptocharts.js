@@ -53,7 +53,7 @@ app.all('/', function(req, res, next) {
 
 app.get('/', function (req, res, next) {
 
-    res.sendFile(path.join(__dirname + '/index.html'));
+    res.sendFile(path.join(__dirname + '/html/index.html'));
 
     log.log(`Index at ip address: ${req.ip}`)
  })
