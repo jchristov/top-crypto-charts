@@ -23,7 +23,7 @@ exports.data = function(req, res, next) {
 
     if (!req.query.exchange || !req.query.time)
     {
-        log.log(`Request at ip address ${req.ip} denied. Invalid Params-Params missing.`);
+        log.log(`Statistics request at ip address ${req.ip} denied. Invalid Params-Params missing.`);
         res.status(400).send('Params missing');
         return;
     }
@@ -32,12 +32,12 @@ exports.data = function(req, res, next) {
     var time = req.query.time;
     
     if(!validateParameters(ex, time)) {
-        log.log(`Request at ip address ${req.ip} denied. Invalid Params-exchange:${ex}, time:${time}.`);
+        log.log(`Statistics request at ip address ${req.ip} denied. Invalid Params-exchange:${ex}, time:${time}.`);
         res.status(400).send('Params invalid');
         return;
     }
     
-    log.log(`Request at ip address ${req.ip} accepted. Params-exchange:${ex}, time:${time}.`);
+    log.log(`Statistics request at ip address ${req.ip} accepted. Params-exchange:${ex}, time:${time}.`);
     
 
 
