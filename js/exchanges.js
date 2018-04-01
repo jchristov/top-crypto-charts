@@ -17,8 +17,6 @@ function refreshMarketChunks()
 {
     x = 10;  // 10 Seconds
 
-    console.log("Refreshing Market Chunks");
-
     database.updateMarketChunk('5m', 5);
     database.updateMarketChunk('15m', 15);
     database.updateMarketChunk('30m', 30);
@@ -28,8 +26,6 @@ function refreshMarketChunks()
     database.updateMarketChunk('6h', 360);
     database.updateMarketChunk('12h', 720);
     //database.updateMarketChunk('1d', 1440);
-
-    console.log("Refreshed Market Chunks");
     
     setTimeout(refreshMarketChunks, x*1000);
 }
