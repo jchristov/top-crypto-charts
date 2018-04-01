@@ -2,7 +2,6 @@ use marketsdb;
 
 SELECT 
     T2.symbol,
-    T2.exchange,
     T1.open,
     T2.high,
     T2.low,
@@ -67,3 +66,6 @@ INNER JOIN (
 ) AS T3
 ON 
     T2.symbol = T3.symbol
+
+WHERE 
+    T2.exchange = 'binance';
