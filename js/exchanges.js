@@ -24,8 +24,8 @@ function refreshMarketChunks()
     database.updateMarketChunk('1h', 60);
     database.updateMarketChunk('2h', 120);
     database.updateMarketChunk('4h', 240);
-    //database.updateMarketChunk('6h', 360);
-    //database.updateMarketChunk('12h', 720);
+    database.updateMarketChunk('6h', 360);
+    database.updateMarketChunk('12h', 720);
     //database.updateMarketChunk('1d', 1440);
 
     console.log("Refreshed Market Chunks");

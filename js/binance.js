@@ -4,7 +4,7 @@ const log = require('./log.js');
 const binanceAPI = require('node-binance-api');
 
 // Constants
-const FIVE_SECONDS_MIL = (60000 * 5);
+const ONE_MIN_MIL = 60000;
 
 binanceAPI.options({
   APIKEY: '<key>',
@@ -127,7 +127,7 @@ exports.StartBinanceMarketStream = function() {
 
             markets.push(symbol);
         }
-        binanceAPI.websockets.candlesticks(markets, '5m', (candlesticks) => {
+        binanceAPI.websockets.candlesticks(markets, '1m', (candlesticks) => {
             
             let { e:eventType, E:eventTime, s:symbol, k:ticks } = candlesticks;
             let { o:open, h:high, l:low, c:close, q:volume, n:trades, i:interval, x:isFinal, q:quoteVolume, V:buyVolume, Q:quoteBuyVolume } = ticks;
@@ -135,15 +135,15 @@ exports.StartBinanceMarketStream = function() {
             if(symbol == '123456')
                 return;
 
-            // Subtract five minutes if final. This is because the time for the final data of the candle increases.
+            // Subtract one minute if final. This is because the time for the final data of the candle increases.
             // We want all data for the current candle to be associated with the opening time for the db to correctly
             // store the data.
             if(isFinal) {
-                eventTime -= FIVE_SECONDS_MIL; 
+                eventTime -= ONE_MIN_MIL; 
             }
     
-            // Time is in milliseconds. Round time down to highest 5 minutes.
-            var time = Math.floor(eventTime / FIVE_SECONDS_MIL) * FIVE_SECONDS_MIL;
+            // Time is in milliseconds. Round time down to highest 1 minute.
+            var time = Math.floor(eventTime / ONE_MIN_MIL) * ONE_MIN_MIL;
             time = Math.floor(time / 1e3);  // Now lower precision to minutes, not milliseconds
     
             var btcVolume = convertToBtc(symbol, volume);
