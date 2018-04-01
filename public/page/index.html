@@ -9,144 +9,16 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-        <script>
 
+        <script src="js/tables.js"></script>
+        <script src="js/charts.js"></script>
+        <script>
             var symbols;
             var symbolsAlpha;
-            
-            function genLinks(data) {
-
-                //console.log(data);
-                var mcc = 'https://www.multicoincharts.com/?';
-                var tv = '';
-
-                for(var i = 0; i < data.length; i++) {
-
-                    var exchange = data[i]['exchange'];
-                    var market = data[i]['market'];
-                    var base = data[i]['base'];
-
-                    var symbol = exchange.concat(':', market, base);
-
-                    mcc = mcc.concat('chart=', symbol);
-                    tv = tv.concat(symbol);
-
-                    if(i != data.length-1)
-                    {
-                        mcc = mcc.concat('&');
-                        tv = tv.concat(',');
-                    }
-
-                }
-
-                $("#mcc").html(mcc);
-                $("#tv").html(tv);
-            }
-
-            function genTable(data) {
-
-                var binanceLinkEx = "https://www.binance.com/trade.html?symbol=";
-                var bittrexLinkEx = "https://bittrex.com/Market/Index?MarketName=";
-
-                var txt = "";
-                txt += "<table class=\"table table-striped table-bordered table-responsive\">";
-                txt += "<tr>";
-                txt += "<th>Coin</th>";
-                txt += "<th>Base Coin</th>";
-                txt += "<th>Exchange</th>";
-                txt += "<th>Volume</th>";
-                txt += "<th>Volume (BTC)</th>";
-                txt += "<th>Gain (%)</th>";
-                txt += "<th>Volatility (%)</th>";
-                txt += "<th>Links</th>";
-                txt += "</tr>";
-                for (var i in data) {
-                    txt += "<tr>";
-                    
-                    // Coin Column with Trading view pop up chart
-                    txt += "<td>"
-                    txt += "<a href=\"#\" data-toggle=\"modal\" data-target=\"#chartModal\" onclick=\"getTVPreview('";
-                    txt += data[i].exchange + ":" + data[i].market + data[i].base;
-                    txt += "');return false;\">";
-                    txt += data[i].market;
-                    txt += "</a>";
-                    txt += "</td>";
-
-                    // Base Column
-                    txt += "<td>" + data[i].base + "</td>";
-
-                    // Exchange Column
-                    txt += "<td>" + data[i].exchange + "</td>";
-
-                    // Volume Column
-                    txt += "<td>" + data[i].volume + "</td>";
-
-                    // Volume BTC Column
-                    txt += "<td>" + data[i].btc_volume + "</td>";
-                    
-                    // Coin price difference Column
-                    txt += "<td";
-                    if(parseFloat(data[i].gain) < 0.0) 
-                        txt += " class=\"text-danger\">" + data[i].gain;
-                    else if(parseFloat(data[i].gain) > 0.0) 
-                        txt += " class=\"text-success\">+" + data[i].gain;
-                    else 
-                        txt += ">" + data[i].gain;
-                    txt += "%</td>";
-
-                    // Coin volatility difference Column
-                    txt += "<td>" + data[i].volatility + "%</td>";
-                    
-                    // Links column
-                    txt += "<td>";
-                    
-                        var exchangelink = "";
-                        var exchangeImg = "";
-                        var coinigyLink = "https://www.coinigy.com/main/markets/";
-                        var tradingViewLink = "https://www.tradingview.com/chart/?symbol=" + data[i].exchange + ":" + data[i].market + data[i].base;;
-                        if(data[i].exchange == "BINANCE") {
-                            exchangelink = binanceLinkEx + data[i].market + "_" + data[i].base;
-                            exchangeImg = "/binance.png";
-                            coinigyLink += "bina/" + data[i].market + "/" + data[i].base;
-                        } else if(data[i].exchange == "BITTREX") {
-                            exchangelink = bittrexLinkEx + data[i].base + "-" + data[i].market;
-                            exchangeImg = "/bittrex.png";
-                            coinigyLink += "btrx/" + data[i].market + "/" + data[i].base;
-                        }
-
-
-                        txt += "<a href=\"";
-                        txt += exchangelink;
-                        txt += "\" target=\"_blank\">";
-                        txt += "<img src=\"";
-                        txt += exchangeImg;
-                        txt += "\" alt=\"Exchange\" height=\"20\" width=\"20\">";
-                        txt +="</a>";
-
-                        txt += "<a href=\"";
-                        txt += coinigyLink;
-                        txt += "\" target=\"_blank\">";
-                        txt += "<img src=\"/coinigy.png\" alt=\"Exchange\" height=\"20\" width=\"20\">";
-                        txt +="</a>";
-
-                        txt += "<a href=\"";
-                        txt += tradingViewLink;
-                        txt += "\" target=\"_blank\">";
-                        txt += "<img src=\"/tradingview.png\" alt=\"Exchange\" height=\"20\" width=\"20\">";
-                        txt +="</a>";
-                    
-                    txt += "</td>";
-
-                    txt += "</tr>";
-                }
-                txt += "</table>"        
-                document.getElementById("table").innerHTML = txt;
-            }
 
             function getCharts() {
 
-
-                var url = "/link?";
+                var url = "/home/data?";
 
                 var numCoinParam = "count=".concat($("#iCount").val());
 
@@ -186,25 +58,6 @@
                     }
 
                 })
-
-            }
-
-            function getTVPreview(symbol) {
-
-                new TradingView.widget(
-                {
-                    "symbol": symbol,
-                    "interval": "60",
-                    "timezone": "Etc/UTC",
-                    "theme": "Light",
-                    "style": "1",
-                    "locale": "uk",
-                    "toolbar_bg": "#f1f3f6",
-                    "enable_publishing": false,
-                    "allow_symbol_change": false,
-                    "container_id": "tradingview_9c53c"
-                });
-
             }
 
             function sortOnClick() {
@@ -225,35 +78,6 @@
                 });
             }
 
-            function openMCC() {
-                window.open($("#mcc").text(), '_blank');
-            }
-
-            function downloadTV() {
-                
-                var filename = "watchlist.txt"
-                var text = $("#tv").text();
-
-                var element = document.createElement('a');
-                element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-                element.setAttribute('download', filename);
-
-                element.style.display = 'none';
-                document.body.appendChild(element);
-
-                element.click();
-
-                document.body.removeChild(element);
-            }
-
-            function copyToClipboard(element) {
-                var $temp = $("<input>");
-                $("body").append($temp);
-                $temp.val($(element).text()).select();
-                document.execCommand("copy");
-                $temp.remove();
-            }
-
             $(document).ready(function(){
 
                 getCharts();
@@ -264,6 +88,7 @@
                     this.value = (Number(this.checked));
                 });
             });
+
         </script>
         <style>
             .top-buffer { margin-top:5px; }
@@ -276,8 +101,12 @@
         <nav class="navbar navbar-inverse navbar-fixed-top">
             <div class="container">
                 <div class="navbar-header">
-                    <a class="navbar-brand">Top Crypto Charts</a>
+                    <a class="navbar-brand" href="/">Top Crypto Charts</a>
                 </div>
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="#">Top Charts</a></li>
+                    <li><a href="/live">Live</a></li>
+                </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="" data-toggle="modal" data-target="#logModal">Log</a></li>
                     <li><a href="" data-toggle="modal" data-target="#helpModal">Help</a></li>
@@ -342,7 +171,7 @@
                                             </div>
                                             <div class="row top-buffer">
                                                 <div class="col-sm-12">
-                                                    <button id="bSubmit" type="button" class="btn btn-primary">Get Coins</button>
+                                                    <button id="bSubmit" type="button" class="btn btn-primary">Apply</button>
                                                 </div>
                                             </div>
                                             <div class="row top-buffer">

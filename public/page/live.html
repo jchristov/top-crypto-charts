@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Top Crypto Charts</title>
+
+        <meta charset="utf-8"> 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+        <script>
+
+            function submitOnClick() {
+
+                var url = "/live/data?";
+
+                var exchangeParam = "&exchange=".concat($("#sExchange").val());
+                var timeParam = "&time=".concat($("#sTime").val());
+
+                url = url.concat(exchangeParam, timeParam);
+
+                $.getJSON(url, function( data ) {
+
+                    console.log(data);
+                    //genTable(data);
+
+                })
+            }
+        </script>
+        
+        <style>
+            .top-buffer { margin-top:5px; }
+            .break-word { overflow-wrap: break-word; }
+        </style>
+    </head>
+    <body>
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="/">Top Crypto Charts</a>
+                </div>
+                <ul class="nav navbar-nav">
+                    <li><a href="/">Top Charts</a></li>
+                    <li class="active"><a href="#">Live</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="" data-toggle="modal" data-target="#logModal">Log</a></li>
+                    <li><a href="" data-toggle="modal" data-target="#helpModal">Help</a></li>
+                    <li><a href="https://github.com/cuppacoffee93/top-crypto-charts">GitHub</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="container" style="margin-top:75px">
+            <div class="row top-buffer">
+                <div class="col-sm-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Live Statistics</div>
+                        <div class="panel-body">
+                            <div class="row top-buffer">
+                                <div class="col-sm-12">
+                                    <label for="countRow">Exchange</label>
+                                </div>
+                            </div>
+                            <div class="row" id="typeRow">
+                                <div class="col-sm-12">
+                                    <select class="form-control" id="sType">
+                                        <option value="0">Binance</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row top-buffer">
+                                <div class="col-sm-12">
+                                    <label for="countRow">Time Period</label>
+                                </div>
+                            </div>
+                            <div class="row" id="typeRow">
+                                <div class="col-sm-12">
+                                    <select class="form-control" id="sType">
+                                        <option value="5m">5 minutes</option>
+                                        <option value="15m">15 minutes</option>
+                                        <option value="30m">30 minutes</option>
+                                        <option value="1h">1 hours</option>
+                                        <option value="2h">2 hours</option>
+                                        <option value="4h">4 hours</option>
+                                        <option value="6h" selected="selected">6 hours</option>
+                                        <option value="12h">12 hours</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row top-buffer">
+                                <div class="col-sm-12">
+                                    <button id="bSubmit" type="button" class="btn btn-primary">Apply</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>         
+                </div>
+                <div class="col-sm-8">
+                    <p id="table"></p>
+                </div>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="logModal" role="dialog">
+                <div class="modal-dialog">
+                    
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Updates</h4>
+                        </div>
+                        <div class="modal-body">
+
+                            <h5 class="modal-title">Version 1.1.0 (30/03/18)</h4>
+                            <ul>
+                                <li>Added volatility filtering</li>
+                            </ul>
+
+                            <h5 class="modal-title">Version 1.0.4 (30/03/18)</h4>
+                            <ul>
+                                <li>Added Trading view preview chart pop up</li>
+                                <li>Added Links to exchange, coinigy and trading view in table</li>
+                            </ul>
+
+                            <h5 class="modal-title">Version 1.0.3 (30/03/18)</h4>
+                            <ul>
+                                <li>Added exchange links to coins in table</li>
+                            </ul>
+                            <h5 class="modal-title">Version 1.0.2 (29/03/18)</h4>
+                            <ul>
+                                <li>Fixed issue where Bittrex gain was not calculated properly</li>
+                            </ul>
+			                <h5 class="modal-title">Version 1.0.1 (29/03/18)</h4>
+                            <ul>
+                                <li>Using new domain - www.topcryptocharts.io</li>
+                            </ul>
+                            <h5 class="modal-title">Version 1.0.0 (28/03/18)</h4>
+                            <ul>
+                                <li>Bittrex exchange added</li>
+                                <li>Can now mix coins and exchanges in one link</li>
+                                <li>The list of coins can be viewed in a table</li>
+                                <li>Fancy new styling!</li>
+                            </ul>
+                            <h5 class="modal-title">Version 0.1.0 (25/03/18)</h4>
+                            <ul>
+                                <li>Filter top volume and gainer coins from the Binance exchange from the past 24hrs</li>
+                                <li>Chart links generated for <a href="https://multicoincharts.com">www.multicoincharts.com</a></li>
+                                <li>Watchlist file generated for <a href="https://tradingview.com">www.tradingview.com</a></li>
+                            </ul>
+                        </div>
+                        <div class="modal-header">
+                            <h4 class="modal-title">Todo</h4>
+                        </div>
+                        <div class="modal-body">
+                            <ul>
+                                <li>Add additional exchanges</li>
+                                <li>Add additional time thresholds. e.g. Filter coin volume from past 12hrs, 4hrs, 1hr</li>
+                                <li>Add trading view chart pop up to preview coin</li>
+                                <li>Add option to filter coins by volatility over multiple time periods</li>
+                                <li>Add option to filter coins by volume difference over multiple time periods</li>
+
+                            </ul>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="helpModal" role="dialog">
+                <div class="modal-dialog">
+                
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Help</h4>
+                        </div>
+                        <div class="modal-body">
+
+                            <p>Thanks for using Top Crypto Charts!</p>
+                            <br/>
+                            <p>Find the project on <a href="https://github.com/cuppacoffee93/charts-generator">GitHub</a> for the following:</p>
+                            <ul class="list-group">
+                                <li class="list-group-item">Report Bugs</li>
+                                <li class="list-group-item">New Features</li>
+                                <li class="list-group-item">Code Contributions</li>
+                            </ul>
+                            <br/>
+                            <p>For anything else, email me at cuppacoffee93@gmail.com.</p>
+                            <br/>
+                            <p>Thanks to the developers at <a href="https://multicoincharts.com">www.multicoincharts.com</a> for the amazing multi chart tool. You can show your support to their project by donating over on their site.</p>
+                            <br/>
+                            <p>If you find this project useful and would like to support it, donations are always welcome :)</p>
+                            <p>BTC: 1z8biMfFw15ctKpvD5suc9Sa3RWVyQdfc</p>
+                            <p>ETH: 0xf776aE12d36Cffc81D66e662CC2f910FDf2E189b</p>
+                            <p>LTC: MVrtR3UpL5SdutM3AN9kFiQT7MvGggXuJT</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="chartModal" role="dialog">
+                <div class="modal-dialog modal-lg">
+                
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body tv-chart-preview">
+
+                            <!-- TradingView Widget BEGIN -->
+                            <div class="tradingview-widget-container">
+                                <div id="tradingview_9c53c"></div>
+                                <div class="tradingview-widget-copyright"><a href="https://uk.tradingview.com/symbols/BINANCE-TRXBTC/" rel="noopener" target="_blank"><span class="blue-text">TRXBTC</span> <span class="blue-text">chart</span> by TradingView</a></div>
+                                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                                <script type="text/javascript">
+                                    new TradingView.widget(
+                                    {
+                                        "symbol": "BINANCE:ADABTC",
+                                        "interval": "60",
+                                        "timezone": "Etc/UTC",
+                                        "theme": "Light",
+                                        "style": "1",
+                                        "locale": "uk",
+                                        "toolbar_bg": "#f1f3f6",
+                                        "enable_publishing": false,
+                                        "allow_symbol_change": false,
+                                        "container_id": "tradingview_9c53c"
+                                    });
+                                </script>
+                            </div>
+                            <!-- TradingView Widget END -->
+    
+                        </div>
+                       
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </body>
+</html>

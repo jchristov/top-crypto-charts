@@ -2,88 +2,37 @@ var express = require('express');
 var app = express();
 var path = require('path');
 var database = require('./js/database.js');
-var exchange = require('./js/exchanges.js');
 var log = require('./js/log.js');
+var home = require('./home');
+var live = require('./live');
 
 // Initialise database
 database.init();
-
-function validateParameters(count, coins, exchanges, type)
-{
-
-   if (isNaN(count) || count <= 0)
-       return false;
-
-    for(var i = 0; i < coins.length; i++) {
-        if("BTC" != coins[i] && "ETH" != coins[i] && "BNB" != coins[i] && "USDT" != coins[i])
-            return false;
-    }
-
-    for(var i = 0; i < exchanges.length; i++) {
-        if("BINANCE" != exchanges[i] && "BITTREX" != exchanges[i])
-            return false;
-    }
-
-    if (isNaN(type) || !(type >= 0 && type <= 2))
-       return false;
-
-   return true;
-}
 
 // REST API
 
 app.enable('trust proxy');
 
-// For images
-app.use(express.static(__dirname + '/img'));
+// For public files
+app.use(express.static(__dirname + '/public'));
 
 app.use(function(error, request, response, next) {
-    console.log("Error handler: ", error);
-    // Send an error message to the user.
+    log.log("Error handler: " + error);
     response.status(500).json({error:error.message});
-
-    // Optionally log the request options so you can analyze it later.
 });
 
 app.all('/', function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "X-Requested-With");
     next();
-   });
+});
 
-app.get('/', function (req, res, next) {
+app.get('/', home.html);
+app.get('/home', home.html);
+app.get('/home/data', home.data);
 
-    res.sendFile(path.join(__dirname + '/html/index.html'));
-
-    log.log(`Index at ip address: ${req.ip}`)
- })
-
- app.get('/link', function (req, res, next) {
-
-    if (!req.query.count || !req.query.coins || !req.query.exchanges || !req.query.type)
-    {
-        log.log(`Request at ip address ${req.ip} denied. Invalid Params-Params missing.`);
-        res.status(400).send('Params missing');
-        return;
-    }
-
-    var count = parseInt(req.query.count);
-    var coins = req.query.coins;
-    var exchanges = req.query.exchanges;
-    var type = parseInt(req.query.type);
-
-    if(!validateParameters(count, coins, exchanges, type)) {
-        log.log(`Request at ip address ${req.ip} denied. Invalid Params-count:${count}, coins:${coins}, exchanges:${exchanges}, type:${type}.`);
-        res.status(400).send('Params invalid');
-        return;
-    }
-
-    log.log(`Request at ip address ${req.ip} accepted. Params-count:${count}, coins:${coins}, exchanges:${exchanges}, type:${type}.`);
-
-    exchange.getSymbols(count, [coins], [exchanges], type, function(result) {
-        res.json(result);
-    });
- })
+app.get('/live', live.html);
+app.get('/live/data', live.html);
  
 var port = process.env.TOP_CRYPTO_CHARTS_PORT || 8080;
 var ip   = process.env.TOP_CRYPTO_CHARTS_IP  || '0.0.0.0';
