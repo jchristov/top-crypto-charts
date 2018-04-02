@@ -90,7 +90,7 @@ exports.marketsInsert = function(market, base, exchange, volume, btcVolume, gain
 
 }
 
-exports.marketCandlesInsert = function(startTime, symbol, exchange, open, high, low, close, volume, btcVolume) {
+/*exports.marketCandlesInsert = function(startTime, symbol, exchange, open, high, low, close, volume, btcVolume) {
 
   // Making sure decimal precision is not longer than 6
   symbol = roundString(symbol, LENGTH_SYMBOL);
@@ -126,7 +126,7 @@ exports.marketCandlesInsert = function(startTime, symbol, exchange, open, high, 
     if (err) throw err;
   });
 
-}
+}*/
 
 // DB Queries
 
@@ -156,7 +156,7 @@ exports.topCoinsQuery = function(num, bases, exchanges, type, callback) {
 
 }
 
-exports.marketChunkQuery = function(exchange, time, callback) {
+/*exports.marketChunkQuery = function(exchange, time, callback) {
 
   var sql = `SELECT 
               symbol, open, high, low, close, volume, btc_volume
@@ -171,9 +171,9 @@ exports.marketChunkQuery = function(exchange, time, callback) {
     callback(result);
   });
 
-}
+}*/
 
-exports.marketCandlesQuery = function(exchange, time, callback) {
+/*exports.marketCandlesQuery = function(exchange, time, callback) {
 
   var sql = `SELECT 
                 T2.symbol,
@@ -250,7 +250,7 @@ exports.marketCandlesQuery = function(exchange, time, callback) {
     callback(result);
   });
 
-}
+}*/
 
 /*exports.marketsCandlesMAQuery = function(symbol, callback) {
 
@@ -272,7 +272,7 @@ exports.marketCandlesQuery = function(exchange, time, callback) {
 }*/
 
 // DB Maintenence
-exports.updateMarketChunk = function(candle, time) {
+/*exports.updateMarketChunk = function(candle, time) {
 
   var sql = `
     INSERT INTO  market_chunks 
@@ -379,7 +379,7 @@ exports.updateMarketChunk = function(candle, time) {
     if (err) throw err;
   });
 
-}
+}*/
 
 exports.init = function() {
   
@@ -404,10 +404,14 @@ exports.init = function() {
     con.query(sql, function (err, result) {
       if (err) throw err;
       console.log("Table created: markets");
+
+      // Initialise Exchanges
+      exchange.initExchanges();
+      
     });
 
     // Create market chunks db
-    sql = `CREATE TABLE IF NOT EXISTS \`market_chunks\` (
+    /*sql = `CREATE TABLE IF NOT EXISTS \`market_chunks\` (
             \`candle\`  ${ENUM_CANDLE} NOT NULL,
             \`symbol\` ${CHAR_SYMBOL} NOT NULL REFERENCES markets(\`symbol\`),
             \`exchange\` ${ENUM_EXCHANGE} NOT NULL,
@@ -442,10 +446,7 @@ exports.init = function() {
     con.query(sql, function (err, result) {
       if (err) throw err;
       console.log("Table created: market_candles");
-
-      // Initialise Exchanges
-      exchange.initExchanges();
-    });
+    });*/
 
   });
 }

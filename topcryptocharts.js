@@ -5,6 +5,7 @@ var database = require('./js/database.js');
 var log = require('./js/log.js');
 var home = require('./home');
 var stats = require('./statistics');
+var influx = require('./js/influx.js');
 
 // Initialise database
 database.init();
@@ -43,3 +44,6 @@ var server = app.listen(port, ip, function () {
 
     log.log(`charts-generator app listening at http://${host}:${port}`);
 })
+
+
+influx.influxTest();

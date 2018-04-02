@@ -1,0 +1,47 @@
+
+
+
+/*
+    simple select from market data
+*/
+SELECT 
+    "coin", 
+    "quote", 
+    "exchange", 
+    "open", 
+    "high", 
+    "low", 
+    "close", 
+    "volume", 
+    "volume_buy", 
+    "volume_ma", 
+    "volume_btc" 
+FROM 
+    "market_data" 
+WHERE 
+    coin = 'ETH'
+
+
+/*
+    ohlcv slice select from market data
+*/
+SELECT 
+    "coin", 
+    "quote", 
+    "exchange", 
+    FIRST("open"), 
+    MAX("high"), 
+    MIN("low"), 
+    LAST("close"), 
+    SUM("volume"), 
+    SUM("volume_buy"), 
+    SUM("volume_ma"), 
+    SUM("volume_btc")  
+FROM 
+    "market_data" 
+WHERE 
+    coin = 'ETH'
+GROUP BY
+    "coin"
+
+SELECT "coin", "quote",  "exchange", FIRST("open"), MAX("high"), MIN("low"), LAST("close"), SUM("volume"), SUM("volume_buy"), SUM("volume_ma"), SUM("volume_btc") FROM "market_data" WHERE coin = 'ETH' GROUP BY "coin"

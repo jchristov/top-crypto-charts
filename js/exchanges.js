@@ -1,6 +1,7 @@
 const binance = require('./binance.js');
 const bittrex = require('./bittrex.js');
 const database = require('./database.js');
+const influx = require('./influx.js');
 
 // Set up automatic markets refresh
 function refreshMarkets()
@@ -42,11 +43,13 @@ exports.getTopCoins = function(topCount, bases, exchanges, type, callback) {
     
     database.topCoinsQuery(topCount, bases, exchanges, type, callback);
 }
+var test = 0;
 
 exports.getMarketChunk = function(exchange, time, callback) {
     
-    //database.marketChunkQuery(exchange, time, callback);
-    var time2 = 0;
+    influx.queryMarketData("BINANCE", time, callback);
+
+    /*var time2 = 0;
     if(time == '5m') {
         time2 = 5;
     } else if(time == '15m') {
@@ -68,5 +71,5 @@ exports.getMarketChunk = function(exchange, time, callback) {
     }
     console.log(time2);
 
-    database.marketCandlesQuery(exchange, time2, callback);
+    database.marketCandlesQuery(exchange, time2, callback);*/
 }
