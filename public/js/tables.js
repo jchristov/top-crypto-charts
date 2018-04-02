@@ -183,7 +183,7 @@ function genStatsTable(data) {
     // Footer
     txt += "<tfoot>";
     txt += "<tr class=\"header\">";
-    txt += "<th>Coin</th>";
+    txt += "<th><input type=\"text\" placeholder=\"Search\" size=\"10\"/></th>";
     txt += "<th>Base</th>";
     txt += "<th>Price (%)</th>";
     txt += "<th>Volatility (%)</th>";
@@ -194,4 +194,46 @@ function genStatsTable(data) {
 
     txt += "</table>";     
     document.getElementById("table").innerHTML = txt;
+
+
+    var table =  $("#table-statistics").DataTable( {
+
+        paging: false,
+        scrollY: 600,
+        order: [[ 2, 'desc' ]],
+        initComplete: function () {
+
+            var columns = [1];
+            for(var i = 0; i < columns.length; i++) {
+                var column = this.api().column(columns[i]);
+                var select = $('<select><option value=""></option></select>')
+                    .appendTo( $(column.footer()).empty() )
+                    .on( 'change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+                        column
+                            .search( val ? '^'+val+'$' : '', true, false )
+                            .draw();
+                    } );
+    
+                column.data().unique().sort().each( function ( d, j ) {
+                    select.append( '<option value="'+d+'">'+d+'</option>' )
+                } );
+            }
+        }
+    });
+
+    // Apply the search
+    table.columns().every( function () {
+        var that = this;
+
+        $( 'input', this.footer() ).on( 'keyup change', function () {
+            if ( that.search() !== this.value ) {
+                that
+                    .search( this.value )
+                    .draw();
+            }
+        } );
+    } );
 }
