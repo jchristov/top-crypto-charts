@@ -102,9 +102,12 @@ function genTable(data) {
 function genStatsTable(data) {
 
     var txt = "";
-    txt += "<table id=\"table-statistics\" class=\"table table-striped table-bordered table-responsive tablesorter showBNB showBTC showETH showUSDT\">";
+    txt += "<table id=\"table-statistics\" class=\"table table-striped table-bordered table-responsive\">";
+    
+    // Header
+    
     txt += "<thead>";
-    txt += "<tr class=\"header\">";
+    txt += "<tr>";
     txt += "<th>Coin</th>";
     txt += "<th>Base</th>";
     txt += "<th>Price (%)</th>";
@@ -113,6 +116,8 @@ function genStatsTable(data) {
     txt += "<th>Volume (BTC)</th>";
     txt += "</tr>";
     txt += "</thead>";
+
+    // Body
     txt += "<tbody>";
     for (var i in data) {
 
@@ -139,7 +144,14 @@ function genStatsTable(data) {
         txt += "<tr class=\"" + base + "\">";
 
         // Coin Column
-        txt += "<td>" + market + "</td>";
+        // Coin Column with Trading view pop up chart
+        txt += "<td>"
+        txt += "<a href=\"#\" data-toggle=\"modal\" data-target=\"#chartModal\" onclick=\"getTVPreview('";
+        txt += data[i].symbol;
+        txt += "');return false;\">";
+        txt += market;
+        txt += "</a>";
+        txt += "</td>";
 
         // Base Column
         txt += "<td>" + base + "</td>";
@@ -165,7 +177,20 @@ function genStatsTable(data) {
 
         txt += "</tr>";
     }
-    txt += "</tbody>"  
-    txt += "</table>"        
+    txt += "</tbody>"; 
+
+    // Footer
+    txt += "<tfoot>";
+    txt += "<tr class=\"header\">";
+    txt += "<th>Coin</th>";
+    txt += "<th>Base</th>";
+    txt += "<th>Price (%)</th>";
+    txt += "<th>Volatility (%)</th>";
+    txt += "<th>Volume</th>";
+    txt += "<th>Volume (BTC)</th>";
+    txt += "</tr>";
+    txt += "</tfoot>";
+
+    txt += "</table>";     
     document.getElementById("table").innerHTML = txt;
 }
