@@ -3,8 +3,8 @@
 ## About
 A web application that aims to summarise crypto market statistics from various exchanges.
 
-## Help
-Developers familiar with time series analysis and database management would be very useful for this project 
+## Contribution
+Developers who are familiar with time series analysis and database management would be very useful for certain features in this project 
 
 ## Updates
 
