@@ -152,6 +152,7 @@ function genStatsTable(data) {
         txt += market;
         txt += "</a>";
         txt += "</td>";
+        //txt += "<td>" + market + "</td>";
 
         // Base Column
         txt += "<td>" + base + "</td>";
