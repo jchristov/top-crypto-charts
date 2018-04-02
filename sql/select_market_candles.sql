@@ -29,7 +29,7 @@ FROM
                 symbol
         )
 ) AS T1
-Inner Join
+INNER Join
 (
 SELECT
     symbol,
@@ -48,7 +48,8 @@ GROUP BY
 ON 
     T1.symbol = T2.symbol
 INNER JOIN (
-    SELECT symbol,
+    SELECT 
+        symbol,
         Close 
     FROM 
         market_candles 
