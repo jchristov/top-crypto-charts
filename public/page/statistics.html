@@ -36,26 +36,31 @@
 
                     genStatsTable(data);
                     $("#table-statistics").DataTable( {
-                    initComplete: function () {
-                        this.api().columns().every( function () {
-                            var column = this;
-                            var select = $('<select><option value=""></option></select>')
-                                .appendTo( $(column.footer()).empty() )
-                                .on( 'change', function () {
-                                    var val = $.fn.dataTable.util.escapeRegex(
-                                        $(this).val()
-                                    );
-            
-                                    column
-                                        .search( val ? '^'+val+'$' : '', true, false )
-                                        .draw();
+
+                        paging: false,
+                        scrollY: 600,
+                        order: [[ 2, 'desc' ]],
+                        initComplete: function () {
+
+                            var columns = [1];
+                            for(var i = 0; i < columns.length; i++) {
+                                var column = this.api().column(columns[i]);
+                                var select = $('<select><option value=""></option></select>')
+                                    .appendTo( $(column.footer()).empty() )
+                                    .on( 'change', function () {
+                                        var val = $.fn.dataTable.util.escapeRegex(
+                                            $(this).val()
+                                        );
+                                        column
+                                            .search( val ? '^'+val+'$' : '', true, false )
+                                            .draw();
+                                    } );
+                    
+                                column.data().unique().sort().each( function ( d, j ) {
+                                    select.append( '<option value="'+d+'">'+d+'</option>' )
                                 } );
-            
-                            column.data().unique().sort().each( function ( d, j ) {
-                                select.append( '<option value="'+d+'">'+d+'</option>' )
-                            } );
-                        } );
-                    }
+                            }
+                        }
                 } );
                 })
             }
@@ -68,6 +73,7 @@
         <style>
             .top-buffer { margin-top:5px; }
             .break-word { overflow-wrap: break-word; }
+            .dataTables_filter, .dataTables_info { display: none; } /* To hide top search box from datatables*/
         </style>
     </head>
     <body>
