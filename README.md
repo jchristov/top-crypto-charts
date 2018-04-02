@@ -1,5 +1,11 @@
 # Top Crypto Charts
 
+## About
+A web application that aims to summarise crypto market statistics from various exchanges.
+
+## Contribution
+Developers who are familiar with time series analysis and database management would be very useful for certain features in this project 
+
 ## Updates
 
 ### Version 1.2.0 (01/04/18)
