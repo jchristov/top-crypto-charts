@@ -29,7 +29,7 @@ const influx = new Influx.InfluxDB({
 
   exports.insertMarketData = function(coin, quote, exchange, open, high, low, close, volume, volume_buy, volume_ma, volume_btc) {
 
-    /*influx.writePoints([
+    influx.writePoints([
     {
         measurement: 'binance_market_data',
         tags: { 
@@ -50,14 +50,14 @@ const influx = new Influx.InfluxDB({
     }
     ]).catch(err => {
         console.error(`Error saving data to InfluxDB! ${err.stack}`)
-    })*/
+    })
   }
 
 // Query
 
 exports.queryBinanceMarketData = function(exchange, time, callback) {
 
-    /*influx.query(`
+    influx.query(`
         SELECT 
             FIRST("open") as open,
             MAX("high") as high,
@@ -79,7 +79,7 @@ exports.queryBinanceMarketData = function(exchange, time, callback) {
 
     }).catch(err => {
         console.log(err.stack);
-    })*/
+    })
 }
 
 exports.init = function() {
