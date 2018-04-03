@@ -31,7 +31,7 @@ exports.getMarketChunk = function(exchange, time, callback) {
     
     influx.queryBinanceMarketData("BINANCE", time, function(result) {
 
-        var data = { data: [] };
+        var data = {"data": []};
 
         for (var i in result) {
 
@@ -41,7 +41,7 @@ exports.getMarketChunk = function(exchange, time, callback) {
                 var gain = (result[i].close - result[i].open) / result[i].open * 100.0;
                 var volatility = (result[i].high - result[i].low) / result[i].low * 100.0;
 
-                data.data.push([
+                /*data.data.push([
                     "BINANCE:"+coin+result[i].quote,
                     coin,
                     result[i].quote,
@@ -49,10 +49,17 @@ exports.getMarketChunk = function(exchange, time, callback) {
                     volatility,
                     result[i].volume,
                     result[i].volume_btc
-                ]);
+                ]);*/
 
-                console.log(result[i]);
-                console.log(data.data[i])
+                data.data.push({
+                    "symbol": "BINANCE:"+coin+result[i].quote,
+                    "coin": coin,
+                    "quote": result[i].quote,
+                    "gain": gain,
+                    "volatility": volatility,
+                    "volume": result[i].volume,
+                    "volume_btc": result[i].volume_btc
+                });
             }
         }
 

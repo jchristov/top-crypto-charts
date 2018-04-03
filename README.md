@@ -8,8 +8,11 @@ Developers who are familiar with time series analysis and database management wo
 
 ## Updates
 
+### Version 1.2.0 (04/04/18)
+* Added new chart builder page
+
 ### Version 1.2.0 (01/04/18)
-* Added new statistics page that shows summaries over differnt time periods (beta)
+* Added new statistics page that shows summaries over different time periods (beta)
 
 ### Version 1.1.0 (30/03/18)
 * Added volatility filtering

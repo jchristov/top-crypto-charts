@@ -62,7 +62,7 @@ function getTVPreview(symbol) {
     new TradingView.widget(
     {
         "symbol": symbol,
-        "interval": "60",
+        "interval": "5",
         "timezone": "Etc/UTC",
         "theme": "Light",
         "style": "1",
