@@ -6,15 +6,24 @@
         <meta charset="utf-8"> 
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <!-- JQuery -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
+        <!-- Bootstrap -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        
+        <!-- Data Tables -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.12/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.12/js/dataTables.bootstrap.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.12/css/dataTables.bootstrap.min.css"></link>
+        
+        <!-- Top Crypto Charts scripts -->
         <script src="js/tables.js"></script>
         <script src="js/charts.js"></script>
+
+        <!-- Page Scripts -->
         <script>
-            var symbols;
-            var symbolsAlpha;
 
             function getCharts() {
 
@@ -42,20 +51,13 @@
 
                 url = url.concat(numCoinParam, baseCoinParam, exchangeParam, typeParam);
                 
+
+                var tableSortCollumn = $("#sType").val();
+
                 $.getJSON(url, function( data ) {
 
-                    symbols = data;
-                    symbolsAlpha = symbols.slice();
-                    sortByKey(symbolsAlpha, 'market');
-
-                    //sortOnClick();
-                    if($("#isort").prop("checked")) {
-                        genLinks(symbolsAlpha);
-                        genTable(symbolsAlpha);
-                    } else {
-                        genLinks(symbols);
-                        genTable(symbols);
-                    }
+                    genLinks(data);
+                    genTable(data, tableSortCollumn);
 
                 })
             }
@@ -92,9 +94,8 @@
         </script>
         <style>
             .top-buffer { margin-top:5px; }
-            .break-word {
-            overflow-wrap: break-word;
-            }
+            .break-word { overflow-wrap: break-word; }
+            .dataTables_filter, .dataTables_info { display: none; } /* To hide top search box from datatables*/
         </style>
     </head>
     <body>
@@ -172,11 +173,6 @@
                                             <div class="row top-buffer">
                                                 <div class="col-sm-12">
                                                     <button id="bSubmit" type="button" class="btn btn-primary">Apply</button>
-                                                </div>
-                                            </div>
-                                            <div class="row top-buffer">
-                                                <div class="col-sm-12">
-                                                    <label class="checkbox-inline"><input id="isort" type="checkbox" name="sort" onclick="sortOnClick();" value="0">Sort Symbols Alphabetically</label>
                                                 </div>
                                             </div>
                                 </div>
