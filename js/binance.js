@@ -1,5 +1,6 @@
 const https = require('https');
 const database = require('./database.js');
+const influx = require('./influx.js');
 const log = require('./log.js');
 const binanceAPI = require('node-binance-api');
 
@@ -148,10 +149,28 @@ exports.StartBinanceMarketStream = function() {
     
             var btcVolume = convertToBtc(symbol, volume);
 
-            symbol = "BINANCE:" + symbol;
+            var tvSymbol = "BINANCE:" + symbol;
 
-            database.marketCandlesInsert(time, symbol, 'binance', parseFloat(open), parseFloat(high), parseFloat(low), parseFloat(close), parseFloat(volume), parseFloat(btcVolume));
+            database.marketCandlesInsert(time, tvSymbol, 'binance', parseFloat(open), parseFloat(high), parseFloat(low), parseFloat(close), parseFloat(volume), parseFloat(btcVolume));
 
+            var coin = "";
+            var query = "";
+            var last3 = symbol.substr(symbol.length - 3);
+            if("BTC" == last3 || "ETH" == last3 || "BNB" == last3)
+            {
+                coin = symbol.substr(0, symbol.length - 3);
+                query = last3;
+            } else if ("USDT" == symbol.substr(symbol.length - 4))
+            {
+                coin = symbol.substr(0, symbol.length - 4);
+                query = symbol.substr(symbol.length - 4);
+            }
+
+            if(isFinal) {
+                influx.insertMarketData(coin, query, 'BINANCE', 
+                                        parseFloat(open), parseFloat(high), parseFloat(low), parseFloat(close), 
+                                        parseFloat(volume), 0.0, 0.0, parseFloat(btcVolume));
+            }
         });
     });
 }

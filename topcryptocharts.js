@@ -5,9 +5,11 @@ var database = require('./js/database.js');
 var log = require('./js/log.js');
 var home = require('./home');
 var stats = require('./statistics');
+var influx = require('./js/influx.js');
 
 // Initialise database
 database.init();
+influx.init();
 
 // REST API
 
