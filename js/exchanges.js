@@ -29,5 +29,34 @@ var test = 0;
 
 exports.getMarketChunk = function(exchange, time, callback) {
     
-    influx.queryBinanceMarketData("BINANCE", time, callback);
+    influx.queryBinanceMarketData("BINANCE", time, function(result) {
+
+        var data = { data: [] };
+
+        for (var i in result) {
+
+            var coin = result[i].coin;
+            if(coin != undefined) {
+
+                var gain = (result[i].close - result[i].open) / result[i].open * 100.0;
+                var volatility = (result[i].high - result[i].low) / result[i].low * 100.0;
+
+                data.data.push([
+                    "BINANCE:"+coin+result[i].quote,
+                    coin,
+                    result[i].quote,
+                    gain,
+                    volatility,
+                    result[i].volume,
+                    result[i].volume_btc
+                ]);
+
+                console.log(result[i]);
+                console.log(data.data[i])
+            }
+        }
+
+        callback(data);
+
+    });
 }
