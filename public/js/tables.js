@@ -121,41 +121,25 @@ function genStatsTable(data) {
     txt += "<tbody>";
     for (var i in data) {
 
-
-        var components = data[i].symbol.split(':');
-        var symbol = components[1];
-        var last3 = symbol.substr(symbol.length - 3);
-        var market = "";
-        var base = "";
-        if("BTC" == last3 || "ETH" == last3 || "BNB" == last3)
-        {
-            market = symbol.substr(0, symbol.length - 3);
-            base = last3;
-        } else if ("USDT" == symbol.substr(symbol.length - 4))
-        {
-            market = symbol.substr(0, symbol.length - 4);
-            base = symbol.substr(symbol.length - 4);
-        }
-
         var gain = (data[i].close - data[i].open) / data[i].open * 100.0;
         var volatility = (data[i].high - data[i].low) / data[i].low * 100.0;
 
 
-        txt += "<tr class=\"" + base + "\">";
+        txt += "<tr class=\"" + data[i].quote + "\">";
 
         // Coin Column
         // Coin Column with Trading view pop up chart
         txt += "<td>"
         txt += "<a href=\"#\" data-toggle=\"modal\" data-target=\"#chartModal\" onclick=\"getTVPreview('";
-        txt += data[i].symbol;
+        txt += "BINANCE:" + data[i].coin + data[i].quote;
         txt += "');return false;\">";
-        txt += market;
+        txt += data[i].coin;
         txt += "</a>";
         txt += "</td>";
         //txt += "<td>" + market + "</td>";
 
         // Base Column
-        txt += "<td>" + base + "</td>";
+        txt += "<td>" + data[i].quote + "</td>";
 
         // Price diff Column
         txt += "<td";
@@ -171,10 +155,10 @@ function genStatsTable(data) {
         txt += "<td>" + volatility.toFixed(2) + "%</td>";
 
         // Volume Column
-        txt += "<td>" + data[i].volume + "</td>";
+        txt += "<td>" + data[i].volume.toFixed(8) + "</td>";
 
         // Volume BTC Column
-        txt += "<td>" + data[i].btc_volume + "</td>";
+        txt += "<td>" + data[i].volume_btc.toFixed(8) + "</td>";
 
         txt += "</tr>";
     }

@@ -1,0 +1,6 @@
+
+/*
+    Drop market_data
+*/
+DROP MEASUREMENT market_data
+

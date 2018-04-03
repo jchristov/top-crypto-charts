@@ -39,8 +39,6 @@ exports.data = function(req, res, next) {
     
     log.log(`Statistics request at ip address ${req.ip} accepted. Params-exchange:${ex}, time:${time}.`);
     
-
-
     exchanges.getMarketChunk(ex, time, function(result) {
         res.json(result);
     });

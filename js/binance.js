@@ -130,28 +130,16 @@ exports.StartBinanceMarketStream = function() {
         }
         binanceAPI.websockets.candlesticks(markets, '1m', (candlesticks) => {
             
-            let { e:eventType, E:eventTime, s:symbol, k:ticks } = candlesticks;
-            let { o:open, h:high, l:low, c:close, q:volume, n:trades, i:interval, x:isFinal, q:quoteVolume, V:buyVolume, Q:quoteBuyVolume } = ticks;
+            let { s:symbol, k:ticks } = candlesticks;
+            let { o:open, h:high, l:low, c:close, q:volume, x:isFinal, q:quoteVolume, V:buyVolume } = ticks;
             
             if(symbol == '123456')
                 return;
 
-            // Subtract one minute if final. This is because the time for the final data of the candle increases.
-            // We want all data for the current candle to be associated with the opening time for the db to correctly
-            // store the data.
-            if(isFinal) {
-                eventTime -= ONE_MIN_MIL; 
-            }
-    
-            // Time is in milliseconds. Round time down to highest 1 minute.
-            var time = Math.floor(eventTime / ONE_MIN_MIL) * ONE_MIN_MIL;
-            time = Math.floor(time / 1e3);  // Now lower precision to minutes, not milliseconds
+            if(!isFinal)
+                return;
     
             var btcVolume = convertToBtc(symbol, volume);
-
-            var tvSymbol = "BINANCE:" + symbol;
-
-            database.marketCandlesInsert(time, tvSymbol, 'binance', parseFloat(open), parseFloat(high), parseFloat(low), parseFloat(close), parseFloat(volume), parseFloat(btcVolume));
 
             var coin = "";
             var query = "";
@@ -169,7 +157,7 @@ exports.StartBinanceMarketStream = function() {
             if(isFinal) {
                 influx.insertMarketData(coin, query, 'BINANCE', 
                                         parseFloat(open), parseFloat(high), parseFloat(low), parseFloat(close), 
-                                        parseFloat(volume), 0.0, 0.0, parseFloat(btcVolume));
+                                        parseFloat(volume), parseFloat(buyVolume), 0.0, parseFloat(btcVolume));
             }
         });
     });

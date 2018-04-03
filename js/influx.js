@@ -74,9 +74,7 @@ exports.queryBinanceMarketData = function(exchange, time, callback) {
         GROUP BY 
             "coin", "quote"
     `).then(result => {
-
-        //callback(result);
-
+        callback(result);
     }).catch(err => {
         console.log(err.stack);
     })
