@@ -8,7 +8,7 @@ Developers who are familiar with time series analysis and database management wo
 
 ## Updates
 
-### Version 1.2.0 (04/04/18)
+### Version 1.3.0 (04/04/18)
 * Added new chart builder page
 
 ### Version 1.2.0 (01/04/18)
